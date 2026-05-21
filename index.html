@@ -131,6 +131,20 @@ body{font-family:var(--font-sans);background:#f5f5f5;min-height:100vh}
 .progress-bar-wrap{background:#e0e0e0;border-radius:20px;height:5px;overflow:hidden;margin-top:6px}
 .progress-bar{height:5px;border-radius:20px;background:var(--am-verde);transition:width 0.4s}
 .am-footer-brand{text-align:center;padding:12px;font-size:10px;color:#aaa;border-top:0.5px solid #eee;margin-top:1rem}
+.time-picker{display:flex;align-items:center;gap:4px}
+.time-picker select{padding:5px 6px;border:1px solid #ccc;border-radius:4px;font-size:12px;color:var(--am-gris);background:#fff;cursor:pointer;-webkit-appearance:none;appearance:none;text-align:center;width:52px}
+.time-picker select:focus{outline:none;border-color:var(--am-verde)}
+.time-picker .sep{font-size:14px;font-weight:600;color:var(--am-gris);line-height:1}
+.comida-block{display:flex;flex-direction:column;gap:6px;background:#fff;border:0.5px solid #e0e0e0;border-radius:5px;padding:8px 10px;transition:opacity .2s}
+.comida-block.disabled{opacity:.45}
+.comida-block.disabled .comida-times{pointer-events:none}
+.comida-block.disabled .comida-times select{background:#f5f5f5;color:#bbb}
+.comida-header{display:flex;align-items:center;gap:8px}
+.comida-checkbox{width:15px;height:15px;cursor:pointer;accent-color:var(--am-verde);position:relative;z-index:2;pointer-events:all}
+.comida-label{font-size:11px;font-weight:500;color:var(--am-cafe)}
+.comida-times{display:flex;gap:12px;align-items:center;margin-top:4px;flex-wrap:wrap}
+.comida-time-group{display:flex;flex-direction:column;gap:3px}
+.comida-time-group label{font-size:10px;color:#888;font-weight:500;text-transform:uppercase;letter-spacing:.03em}
 .divider{border:none;border-top:0.5px solid #eee;margin:4px 0}
 </style>
 </head>
@@ -342,9 +356,155 @@ body{font-family:var(--font-sans);background:#f5f5f5;min-height:100vh}
         <div class="field"><label>Fecha inicio *</label><input type="date" id="f-fecha-inicio" onchange="updateCodigoPreview()"></div>
         <div class="field"><label>Fecha fin</label><input type="date" id="f-fecha-fin"></div>
       </div>
-      <div class="field-row">
-        <div class="field"><label>Hora de salida</label><input type="time" id="f-hora-salida" placeholder="06:00"></div>
-        <div class="field"><label>Hora de llegada</label><input type="time" id="f-hora-llegada" placeholder="18:00"></div>
+      <!-- Horario y tiempos de comida -->
+      <div style="background:var(--am-verde-light);border:0.5px solid var(--am-verde-border);border-radius:6px;padding:10px 12px;display:flex;flex-direction:column;gap:12px">
+        <div style="font-size:11px;font-weight:500;color:var(--am-verde);text-transform:uppercase;letter-spacing:0.04em">Horario de la gira</div>
+
+        <!-- Salida y llegada -->
+        <div class="field-row">
+          <div class="field">
+            <label>Hora de salida</label>
+            <div class="time-picker" id="tp-salida">
+              <select id="f-hora-salida-h" onchange="syncTimeField('salida');calcularHoras()"><option value="">--</option><option value="00">00</option><option value="01">01</option><option value="02">02</option><option value="03">03</option><option value="04">04</option><option value="05">05</option><option value="06">06</option><option value="07">07</option><option value="08">08</option><option value="09">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option><option value="21">21</option><option value="22">22</option><option value="23">23</option></select>
+              <span class="sep">:</span>
+              <select id="f-hora-salida-m" onchange="syncTimeField('salida');calcularHoras()"><option value="">--</option><option value="00">00</option><option value="05">05</option><option value="10">10</option><option value="15">15</option><option value="20">20</option><option value="25">25</option><option value="30">30</option><option value="35">35</option><option value="40">40</option><option value="45">45</option><option value="50">50</option><option value="55">55</option></select>
+            </div>
+            <input type="hidden" id="f-hora-salida">
+          </div>
+          <div class="field">
+            <label>Hora de llegada</label>
+            <div class="time-picker" id="tp-llegada">
+              <select id="f-hora-llegada-h" onchange="syncTimeField('llegada');calcularHoras()"><option value="">--</option><option value="00">00</option><option value="01">01</option><option value="02">02</option><option value="03">03</option><option value="04">04</option><option value="05">05</option><option value="06">06</option><option value="07">07</option><option value="08">08</option><option value="09">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option><option value="21">21</option><option value="22">22</option><option value="23">23</option></select>
+              <span class="sep">:</span>
+              <select id="f-hora-llegada-m" onchange="syncTimeField('llegada');calcularHoras()"><option value="">--</option><option value="00">00</option><option value="05">05</option><option value="10">10</option><option value="15">15</option><option value="20">20</option><option value="25">25</option><option value="30">30</option><option value="35">35</option><option value="40">40</option><option value="45">45</option><option value="50">50</option><option value="55">55</option></select>
+            </div>
+            <input type="hidden" id="f-hora-llegada">
+          </div>
+        </div>
+
+        <!-- Tiempos de comida -->
+        <div style="font-size:11px;font-weight:500;color:var(--am-verde)">Tiempos de comida <span style="font-weight:400;color:#888;font-size:10px">(active el que corresponda)</span></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+
+          <!-- Desayuno -->
+          <div class="comida-block disabled" id="blk-des">
+            <div class="comida-header">
+              <input class="comida-checkbox" type="checkbox" id="chk-des" onchange="toggleComida('des')">
+              <label class="comida-label" for="chk-des" style="cursor:pointer;user-select:none">🍳 Desayuno</label>
+            </div>
+            <div class="comida-times">
+              <div class="comida-time-group">
+                <label>Inicio</label>
+                <div class="time-picker">
+                  <select id="f-des-inicio-h" onchange="syncComidaField('des','inicio');calcularHoras()"><option value="">--</option><option value="00">00</option><option value="01">01</option><option value="02">02</option><option value="03">03</option><option value="04">04</option><option value="05">05</option><option value="06">06</option><option value="07">07</option><option value="08">08</option><option value="09">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option><option value="21">21</option><option value="22">22</option><option value="23">23</option></select>
+                  <span class="sep">:</span>
+                  <select id="f-des-inicio-m" onchange="syncComidaField('des','inicio');calcularHoras()"><option value="">--</option><option value="00">00</option><option value="05">05</option><option value="10">10</option><option value="15">15</option><option value="20">20</option><option value="25">25</option><option value="30">30</option><option value="35">35</option><option value="40">40</option><option value="45">45</option><option value="50">50</option><option value="55">55</option></select>
+                </div>
+                <input type="hidden" id="f-des-inicio">
+              </div>
+              <div class="comida-time-group">
+                <label>Fin</label>
+                <div class="time-picker">
+                  <select id="f-des-fin-h" onchange="syncComidaField('des','fin');calcularHoras()"><option value="">--</option><option value="00">00</option><option value="01">01</option><option value="02">02</option><option value="03">03</option><option value="04">04</option><option value="05">05</option><option value="06">06</option><option value="07">07</option><option value="08">08</option><option value="09">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option><option value="21">21</option><option value="22">22</option><option value="23">23</option></select>
+                  <span class="sep">:</span>
+                  <select id="f-des-fin-m" onchange="syncComidaField('des','fin');calcularHoras()"><option value="">--</option><option value="00">00</option><option value="05">05</option><option value="10">10</option><option value="15">15</option><option value="20">20</option><option value="25">25</option><option value="30">30</option><option value="35">35</option><option value="40">40</option><option value="45">45</option><option value="50">50</option><option value="55">55</option></select>
+                </div>
+                <input type="hidden" id="f-des-fin">
+              </div>
+            </div>
+          </div>
+
+          <!-- Almuerzo -->
+          <div class="comida-block disabled" id="blk-alm">
+            <div class="comida-header">
+              <input class="comida-checkbox" type="checkbox" id="chk-alm" onchange="toggleComida('alm')">
+              <label class="comida-label" for="chk-alm" style="cursor:pointer;user-select:none">🍽️ Almuerzo</label>
+            </div>
+            <div class="comida-times">
+              <div class="comida-time-group">
+                <label>Inicio</label>
+                <div class="time-picker">
+                  <select id="f-alm-inicio-h" onchange="syncComidaField('alm','inicio');calcularHoras()"><option value="">--</option><option value="00">00</option><option value="01">01</option><option value="02">02</option><option value="03">03</option><option value="04">04</option><option value="05">05</option><option value="06">06</option><option value="07">07</option><option value="08">08</option><option value="09">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option><option value="21">21</option><option value="22">22</option><option value="23">23</option></select>
+                  <span class="sep">:</span>
+                  <select id="f-alm-inicio-m" onchange="syncComidaField('alm','inicio');calcularHoras()"><option value="">--</option><option value="00">00</option><option value="05">05</option><option value="10">10</option><option value="15">15</option><option value="20">20</option><option value="25">25</option><option value="30">30</option><option value="35">35</option><option value="40">40</option><option value="45">45</option><option value="50">50</option><option value="55">55</option></select>
+                </div>
+                <input type="hidden" id="f-alm-inicio">
+              </div>
+              <div class="comida-time-group">
+                <label>Fin</label>
+                <div class="time-picker">
+                  <select id="f-alm-fin-h" onchange="syncComidaField('alm','fin');calcularHoras()"><option value="">--</option><option value="00">00</option><option value="01">01</option><option value="02">02</option><option value="03">03</option><option value="04">04</option><option value="05">05</option><option value="06">06</option><option value="07">07</option><option value="08">08</option><option value="09">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option><option value="21">21</option><option value="22">22</option><option value="23">23</option></select>
+                  <span class="sep">:</span>
+                  <select id="f-alm-fin-m" onchange="syncComidaField('alm','fin');calcularHoras()"><option value="">--</option><option value="00">00</option><option value="05">05</option><option value="10">10</option><option value="15">15</option><option value="20">20</option><option value="25">25</option><option value="30">30</option><option value="35">35</option><option value="40">40</option><option value="45">45</option><option value="50">50</option><option value="55">55</option></select>
+                </div>
+                <input type="hidden" id="f-alm-fin">
+              </div>
+            </div>
+          </div>
+
+          <!-- Cena -->
+          <div class="comida-block disabled" id="blk-cen">
+            <div class="comida-header">
+              <input class="comida-checkbox" type="checkbox" id="chk-cen" onchange="toggleComida('cen')">
+              <label class="comida-label" for="chk-cen" style="cursor:pointer;user-select:none">🌙 Cena</label>
+            </div>
+            <div class="comida-times">
+              <div class="comida-time-group">
+                <label>Inicio</label>
+                <div class="time-picker">
+                  <select id="f-cen-inicio-h" onchange="syncComidaField('cen','inicio');calcularHoras()"><option value="">--</option><option value="00">00</option><option value="01">01</option><option value="02">02</option><option value="03">03</option><option value="04">04</option><option value="05">05</option><option value="06">06</option><option value="07">07</option><option value="08">08</option><option value="09">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option><option value="21">21</option><option value="22">22</option><option value="23">23</option></select>
+                  <span class="sep">:</span>
+                  <select id="f-cen-inicio-m" onchange="syncComidaField('cen','inicio');calcularHoras()"><option value="">--</option><option value="00">00</option><option value="05">05</option><option value="10">10</option><option value="15">15</option><option value="20">20</option><option value="25">25</option><option value="30">30</option><option value="35">35</option><option value="40">40</option><option value="45">45</option><option value="50">50</option><option value="55">55</option></select>
+                </div>
+                <input type="hidden" id="f-cen-inicio">
+              </div>
+              <div class="comida-time-group">
+                <label>Fin</label>
+                <div class="time-picker">
+                  <select id="f-cen-fin-h" onchange="syncComidaField('cen','fin');calcularHoras()"><option value="">--</option><option value="00">00</option><option value="01">01</option><option value="02">02</option><option value="03">03</option><option value="04">04</option><option value="05">05</option><option value="06">06</option><option value="07">07</option><option value="08">08</option><option value="09">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option><option value="21">21</option><option value="22">22</option><option value="23">23</option></select>
+                  <span class="sep">:</span>
+                  <select id="f-cen-fin-m" onchange="syncComidaField('cen','fin');calcularHoras()"><option value="">--</option><option value="00">00</option><option value="05">05</option><option value="10">10</option><option value="15">15</option><option value="20">20</option><option value="25">25</option><option value="30">30</option><option value="35">35</option><option value="40">40</option><option value="45">45</option><option value="50">50</option><option value="55">55</option></select>
+                </div>
+                <input type="hidden" id="f-cen-fin">
+              </div>
+            </div>
+          </div>
+
+          <!-- Merienda -->
+          <div class="comida-block disabled" id="blk-mer">
+            <div class="comida-header">
+              <input class="comida-checkbox" type="checkbox" id="chk-mer" onchange="toggleComida('mer')">
+              <label class="comida-label" for="chk-mer" style="cursor:pointer;user-select:none">🍎 Merienda</label>
+            </div>
+            <div class="comida-times">
+              <div class="comida-time-group">
+                <label>Inicio</label>
+                <div class="time-picker">
+                  <select id="f-mer-inicio-h" onchange="syncComidaField('mer','inicio');calcularHoras()"><option value="">--</option><option value="00">00</option><option value="01">01</option><option value="02">02</option><option value="03">03</option><option value="04">04</option><option value="05">05</option><option value="06">06</option><option value="07">07</option><option value="08">08</option><option value="09">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option><option value="21">21</option><option value="22">22</option><option value="23">23</option></select>
+                  <span class="sep">:</span>
+                  <select id="f-mer-inicio-m" onchange="syncComidaField('mer','inicio');calcularHoras()"><option value="">--</option><option value="00">00</option><option value="05">05</option><option value="10">10</option><option value="15">15</option><option value="20">20</option><option value="25">25</option><option value="30">30</option><option value="35">35</option><option value="40">40</option><option value="45">45</option><option value="50">50</option><option value="55">55</option></select>
+                </div>
+                <input type="hidden" id="f-mer-inicio">
+              </div>
+              <div class="comida-time-group">
+                <label>Fin</label>
+                <div class="time-picker">
+                  <select id="f-mer-fin-h" onchange="syncComidaField('mer','fin');calcularHoras()"><option value="">--</option><option value="00">00</option><option value="01">01</option><option value="02">02</option><option value="03">03</option><option value="04">04</option><option value="05">05</option><option value="06">06</option><option value="07">07</option><option value="08">08</option><option value="09">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option><option value="21">21</option><option value="22">22</option><option value="23">23</option></select>
+                  <span class="sep">:</span>
+                  <select id="f-mer-fin-m" onchange="syncComidaField('mer','fin');calcularHoras()"><option value="">--</option><option value="00">00</option><option value="05">05</option><option value="10">10</option><option value="15">15</option><option value="20">20</option><option value="25">25</option><option value="30">30</option><option value="35">35</option><option value="40">40</option><option value="45">45</option><option value="50">50</option><option value="55">55</option></select>
+                </div>
+                <input type="hidden" id="f-mer-fin">
+              </div>
+            </div>
+          </div>
+
+        </div><!-- end grid comidas -->
+
+        <!-- Total horas -->
+        <div style="background:#fff;border:0.5px solid var(--am-verde-border);border-radius:5px;padding:7px 12px;display:flex;align-items:center;justify-content:space-between">
+          <span style="font-size:11px;color:var(--am-gris)">Total horas trabajo efectivo:</span>
+          <span id="f-total-horas" style="font-family:monospace;font-size:13px;font-weight:500;color:var(--am-verde)">—</span>
+        </div>
       </div>
       <div class="field"><label>Localidades / Sitios de campo</label><input type="text" id="f-localidades" placeholder="Ej: Liberia, Santa Cruz, Nicoya (separadas por coma)"></div>
       <div class="field">
@@ -354,31 +514,7 @@ body{font-family:var(--font-sans);background:#f5f5f5;min-height:100vh}
       </div>
       <div class="field"><label>Objetivo / Descripción</label><textarea id="f-notas" placeholder="Descripción técnica, objetivos del trabajo de campo..."></textarea></div>
       <div class="field"><label>Razón de cancelación</label><input type="text" id="f-cancelacion" placeholder="Solo si aplica"></div>
-      <div style="background:#FAEEDA;border:0.5px solid #FAC775;border-radius:6px;padding:10px 12px;display:flex;flex-direction:column;gap:8px">
-        <div style="font-size:11px;font-weight:500;color:#633806;text-transform:uppercase;letter-spacing:0.04em">Pagos del estudio</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-          <!-- Adelanto 50% -->
-          <div style="display:flex;flex-direction:column;gap:6px">
-            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:12px;color:var(--am-gris)">
-              <input type="checkbox" id="f-adelanto-pagado" onchange="toggleAdelanto(this)">
-              Adelanto pagado
-            </label>
-            <div id="f-adelanto-ref-wrap" style="display:none">
-              <input type="text" id="f-adelanto-ref" placeholder="Ref. comprobante adelanto" style="font-size:11px;border-radius:4px;width:100%;padding:5px 8px;border:1px solid #ccc">
-            </div>
-          </div>
-          <!-- Segundo 50% -->
-          <div style="display:flex;flex-direction:column;gap:6px">
-            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:12px;color:var(--am-gris)">
-              <input type="checkbox" id="f-segundo-pagado" onchange="toggleSegundo(this)">
-              Segundo 50% pagado
-            </label>
-            <div id="f-segundo-ref-wrap" style="display:none">
-              <input type="text" id="f-segundo-ref" placeholder="Ref. comprobante segundo 50%" style="font-size:11px;border-radius:4px;width:100%;padding:5px 8px;border:1px solid #ccc">
-            </div>
-          </div>
-        </div>
-      </div>
+
     </div>
     <div class="modal-footer">
       <span class="saving" id="saving-indicator">Guardando...</span>
@@ -462,7 +598,8 @@ const AVC=['av0','av1','av2','av3','av4','av5'];
 // ── CONFIGURACIÓN COMPARTIDA ─────────────────────────────────
 // Para compartir la app con el equipo, pegue aquí la URL del Apps Script
 // y guarde el archivo. Todos los que abran este archivo la usarán automáticamente.
-const APPS_SCRIPT_URL_FIJA = 'https://script.google.com/macros/s/AKfycbwZq-R0M1J79oduIVGHoyO_zYDeBXhoAOccHplmWXKayIH-TDaweLpg8nZGmsVRa_YGvw/exec';
+// App publicada en: https://leovab.github.io/ambitum-giras/
+const APPS_SCRIPT_URL_FIJA = 'https://script.google.com/macros/s/AKfycbzW7kzOmXUgNshQCGgg40x7a0SYKHegNHHg50HUvuU7I7tROVW3U-AWpYdpENHWmkFYBg/exec';
 
 let APPS_SCRIPT_URL = APPS_SCRIPT_URL_FIJA || localStorage.getItem('ambitum_script_url') || '';
 
@@ -919,26 +1056,108 @@ function addPersonalChip(){const sel=document.getElementById('personal-select');
 function renderChips(){document.getElementById('personal-chips').innerHTML=selectedPersonal.map(id=>{const p=personal.find(x=>x.id===id);return`<span class="personal-chip">${p?p.nombre:id}<span class="chip-rm" onclick="removeChip('${id}')">×</span></span>`;}).join('');}
 function removeChip(id){selectedPersonal=selectedPersonal.filter(x=>x!==id);renderChips();}
 
-function toggleAdelanto(cb){
-  document.getElementById('f-adelanto-ref-wrap').style.display = cb.checked ? 'block' : 'none';
-  if(!cb.checked) document.getElementById('f-adelanto-ref').value='';
+function timeToMin(t){
+  if(!t||t==='--:--') return null;
+  const parts = t.split(':');
+  if(parts.length<2) return null;
+  const h=parseInt(parts[0]), m=parseInt(parts[1]);
+  if(isNaN(h)||isNaN(m)) return null;
+  return h*60+m;
 }
 
-function toggleSegundo(cb){
-  document.getElementById('f-segundo-ref-wrap').style.display = cb.checked ? 'block' : 'none';
-  if(!cb.checked) document.getElementById('f-segundo-ref').value='';
+function minToHHMM(m){
+  if(m===null||m<0) return '0h 00m';
+  return Math.floor(m/60)+'h '+String(m%60).padStart(2,'0')+'m';
+}
+
+// Sync hidden time field from two selects (h + m)
+function syncTimeField(id){
+  const h=document.getElementById('f-hora-'+id+'-h').value;
+  const m=document.getElementById('f-hora-'+id+'-m').value;
+  document.getElementById('f-hora-'+id).value=(h&&m)?h+':'+m:'';
+}
+
+// Sync hidden comida field from two selects
+function syncComidaField(comida, part){
+  const h=document.getElementById('f-'+comida+'-'+part+'-h').value;
+  const m=document.getElementById('f-'+comida+'-'+part+'-m').value;
+  document.getElementById('f-'+comida+'-'+part).value=(h&&m)?h+':'+m:'';
+}
+
+// Toggle comida block enabled/disabled via checkbox
+function toggleComida(id){
+  const chk=document.getElementById('chk-'+id);
+  const blk=document.getElementById('blk-'+id);
+  if(!chk||!blk) return;
+  const active=chk.checked;
+  blk.classList.toggle('disabled',!active);
+  if(!active){
+    // Clear values when unchecked
+    ['inicio','fin'].forEach(function(part){
+      const hEl=document.getElementById('f-'+id+'-'+part+'-h');
+      const mEl=document.getElementById('f-'+id+'-'+part+'-m');
+      const hid=document.getElementById('f-'+id+'-'+part);
+      if(hEl) hEl.value='';
+      if(mEl) mEl.value='';
+      if(hid) hid.value='';
+    });
+    calcularHoras();
+  }
+}
+
+// Set a time-picker pair from a "HH:MM" string
+function setTimePicker(prefix, val){
+  if(!val||val==='null'){
+    document.getElementById(prefix+'-h').value='';
+    document.getElementById(prefix+'-m').value='';
+    return;
+  }
+  const parts=val.split(':');
+  if(parts.length>=2){
+    document.getElementById(prefix+'-h').value=parts[0];
+    document.getElementById(prefix+'-m').value=parts[1];
+  }
+}
+
+function calcularHoras(){
+  syncTimeField('salida'); syncTimeField('llegada');
+  const sal=timeToMin(document.getElementById('f-hora-salida').value);
+  const lle=timeToMin(document.getElementById('f-hora-llegada').value);
+  const el=document.getElementById('f-total-horas');
+  if(sal===null||lle===null){el.textContent='—';return;}
+  let total=lle-sal;
+  if(total<0) total+=24*60;
+  let descuentos=0;
+  ['des','alm','cen','mer'].forEach(function(id){
+    if(!document.getElementById('chk-'+id).checked) return;
+    const ini=timeToMin(document.getElementById('f-'+id+'-inicio').value);
+    const fin=timeToMin(document.getElementById('f-'+id+'-fin').value);
+    if(ini!==null&&fin!==null&&fin>ini) descuentos+=(fin-ini);
+  });
+  const efectivo=Math.max(0,total-descuentos);
+  el.textContent=minToHHMM(efectivo)+(descuentos>0?' (comidas: -'+minToHHMM(descuentos)+')':'');
 }
 
 function openModal(){
   editingId=null;selectedPersonal=[];
-  ['edit-id','f-nombre','f-fecha-inicio','f-fecha-fin','f-localidades','f-notas','f-cancelacion','f-hora-salida','f-hora-llegada','f-adelanto-ref'].forEach(id=>document.getElementById(id).value='');
+  ['edit-id','f-nombre','f-fecha-inicio','f-fecha-fin','f-localidades','f-notas','f-cancelacion'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
+  // Reset all time pickers
+  ['salida','llegada'].forEach(function(id){
+    ['h','m'].forEach(function(part){ const el=document.getElementById('f-hora-'+id+'-'+part); if(el) el.value=''; });
+    const hid=document.getElementById('f-hora-'+id); if(hid) hid.value='';
+  });
+  ['des','alm','cen','mer'].forEach(function(id){
+    document.getElementById('chk-'+id).checked=false;
+    document.getElementById('blk-'+id).classList.add('disabled');
+    ['inicio','fin'].forEach(function(part){
+      ['h','m'].forEach(function(px){ const el=document.getElementById('f-'+id+'-'+part+'-'+px); if(el) el.value=''; });
+      const hid=document.getElementById('f-'+id+'-'+part); if(hid) hid.value='';
+    });
+  });
   document.getElementById('f-estado').value='pendiente';
   document.getElementById('f-alerta').value='3';
   document.getElementById('f-tipo-estudio').value='';
-  document.getElementById('f-adelanto-pagado').checked=false;
-  document.getElementById('f-adelanto-ref-wrap').style.display='none';
-  document.getElementById('f-segundo-pagado').checked=false;
-  document.getElementById('f-segundo-ref-wrap').style.display='none';
+  document.getElementById('f-total-horas').textContent='—';
   document.getElementById('modal-title').textContent='Nueva gira de campo';
   codigoActual=generarCodigo();
   document.getElementById('codigo-preview').textContent=codigoActual;
@@ -959,14 +1178,20 @@ function editGira(id){
   document.getElementById('f-tipo-estudio').value=g.tipoEstudio||'';
   document.getElementById('f-hora-salida').value=g.horaSalida||'';
   document.getElementById('f-hora-llegada').value=g.horaLlegada||'';
-  const adelanto=!!g.adelantoPagado;
-  document.getElementById('f-adelanto-pagado').checked=adelanto;
-  document.getElementById('f-adelanto-ref').value=g.adelantoRef||'';
-  document.getElementById('f-adelanto-ref-wrap').style.display=adelanto?'block':'none';
-  const segundo=!!g.segundoPagado;
-  document.getElementById('f-segundo-pagado').checked=segundo;
-  document.getElementById('f-segundo-ref').value=g.segundoRef||'';
-  document.getElementById('f-segundo-ref-wrap').style.display=segundo?'block':'none';
+  // Populate salida/llegada pickers
+  setTimePicker('f-hora-salida', g.horaSalida||'');
+  setTimePicker('f-hora-llegada', g.horaLlegada||'');
+  syncTimeField('salida'); syncTimeField('llegada');
+  // Populate meal pickers
+  ['des','alm','cen','mer'].forEach(function(id){
+    const hasData = (g[id+'inicio']||g[id+'fin']);
+    document.getElementById('chk-'+id).checked=!!hasData;
+    document.getElementById('blk-'+id).classList.toggle('disabled',!hasData);
+    setTimePicker('f-'+id+'-inicio', g[id+'inicio']||'');
+    setTimePicker('f-'+id+'-fin',    g[id+'fin']||'');
+    syncComidaField(id,'inicio'); syncComidaField(id,'fin');
+  });
+  setTimeout(calcularHoras, 50);
   document.getElementById('modal-title').textContent='Editar gira';
   codigoActual=g.codigo||generarCodigo();
   document.getElementById('codigo-preview').textContent=codigoActual;
@@ -982,7 +1207,14 @@ function saveGira(){
   if(!nombre||!fecha){alert('El nombre y la fecha de inicio son obligatorios.');return;}
   if(!tipo){alert('Por favor selecciona el tipo de estudio.');return;}
   const prevGira = editingId ? giras.find(x=>x.id===editingId) : null;
-  const g={id:editingId||'g'+Date.now(),codigo:codigoActual,tipoEstudio:tipo,nombre,estado:document.getElementById('f-estado').value,fechaInicio:fecha,fechaFin:document.getElementById('f-fecha-fin').value||null,horaSalida:document.getElementById('f-hora-salida').value||null,horaLlegada:document.getElementById('f-hora-llegada').value||null,localidades:document.getElementById('f-localidades').value.split(',').map(s=>s.trim()).filter(Boolean),personal:[...selectedPersonal],notas:document.getElementById('f-notas').value.trim(),cancelacion:document.getElementById('f-cancelacion').value.trim(),adelantoPagado:document.getElementById('f-adelanto-pagado').checked,adelantoRef:document.getElementById('f-adelanto-ref').value.trim(),segundoPagado:document.getElementById('f-segundo-pagado').checked,segundoRef:document.getElementById('f-segundo-ref').value.trim(),alerta:document.getElementById('f-alerta').value,creada:prevGira?prevGira.creada:new Date().toISOString(),calEventId:prevGira?prevGira.calEventId||'':''};
+  const g={id:editingId||'g'+Date.now(),codigo:codigoActual,tipoEstudio:tipo,nombre,estado:document.getElementById('f-estado').value,fechaInicio:fecha,fechaFin:document.getElementById('f-fecha-fin').value||null,horaSalida:document.getElementById('f-hora-salida').value||null,horaLlegada:document.getElementById('f-hora-llegada').value||null,localidades:document.getElementById('f-localidades').value.split(',').map(s=>s.trim()).filter(Boolean),personal:[...selectedPersonal],notas:document.getElementById('f-notas').value.trim(),cancelacion:document.getElementById('f-cancelacion').value.trim(),desinicio:document.getElementById('f-des-inicio').value||null,
+    desfin:document.getElementById('f-des-fin').value||null,
+    alminicio:document.getElementById('f-alm-inicio').value||null,
+    almfin:document.getElementById('f-alm-fin').value||null,
+    ceninicio:document.getElementById('f-cen-inicio').value||null,
+    cenfin:document.getElementById('f-cen-fin').value||null,
+    merinicio:document.getElementById('f-mer-inicio').value||null,
+    merfin:document.getElementById('f-mer-fin').value||null,alerta:document.getElementById('f-alerta').value,creada:prevGira?prevGira.creada:new Date().toISOString(),calEventId:prevGira?prevGira.calEventId||'':''};
   if(editingId){const idx=giras.findIndex(x=>x.id===editingId);giras[idx]=g;}else{giras.push(g);}
   saveData();
   syncOneGiraToCalendar(g); // sincroniza en background
@@ -1008,7 +1240,14 @@ function showDetail(id){
     <div style="margin-bottom:12px"><div style="font-size:10px;color:var(--am-verde);font-weight:500;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:4px">Localidades</div><div style="display:flex;flex-wrap:wrap;gap:4px">${locs}</div></div>
     <div style="margin-bottom:12px"><div style="font-size:10px;color:var(--am-verde);font-weight:500;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:4px">Personal (${(g.personal||[]).length})</div><div style="display:flex;flex-wrap:wrap;gap:4px">${pers||'<span style="color:#aaa;font-size:11px">No asignado</span>'}</div></div>
     ${g.notas?`<div style="margin-bottom:12px"><div style="font-size:10px;color:var(--am-verde);font-weight:500;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:4px">Descripción</div><div style="font-size:12px;color:var(--am-gris);line-height:1.6">${g.notas}</div></div>`:''}
-    <div style="margin-bottom:12px"><div style="font-size:10px;color:#854F0B;font-weight:500;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:6px">Pagos del estudio</div><div style="display:flex;gap:12px;flex-wrap:wrap"><div style="display:flex;align-items:center;gap:6px"><span style="font-size:12px;font-weight:500;${g.adelantoPagado?'color:#0F6E56':'color:#A32D2D'}">${g.adelantoPagado?'✓':'✗'} Adelanto</span>${g.adelantoPagado&&g.adelantoRef?`<span style="font-size:10px;color:#666;background:#FAEEDA;padding:2px 7px;border-radius:20px;border:0.5px solid #FAC775">${g.adelantoRef}</span>`:''}</div><div style="display:flex;align-items:center;gap:6px"><span style="font-size:12px;font-weight:500;${g.segundoPagado?'color:#0F6E56':'color:#A32D2D'}">${g.segundoPagado?'✓':'✗'} Segundo 50%</span>${g.segundoPagado&&g.segundoRef?`<span style="font-size:10px;color:#666;background:#FAEEDA;padding:2px 7px;border-radius:20px;border:0.5px solid #FAC775">${g.segundoRef}</span>`:''}</div></div></div>
+    <div style="margin-bottom:12px"><div style="font-size:10px;color:var(--am-verde);font-weight:500;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:6px">Horario y tiempos de comida</div>
+    ${(g.horaSalida||g.horaLlegada)?'<div style=\"font-size:12px;color:var(--am-gris);margin-bottom:6px\">Salida: <strong>'+(g.horaSalida||'—')+'</strong> &nbsp;→&nbsp; Llegada: <strong>'+(g.horaLlegada||'—')+'</strong></div>':''}
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:11px">
+      ${g.desinicio||g.desfin?'<div style=\"background:#f9f9f9;border-radius:4px;padding:5px 8px\">🍳 Desayuno: '+(g.desinicio||'—')+' – '+(g.desfin||'—')+'</div>':''}
+      ${g.alminicio||g.almfin?'<div style=\"background:#f9f9f9;border-radius:4px;padding:5px 8px\">🍽️ Almuerzo: '+(g.alminicio||'—')+' – '+(g.almfin||'—')+'</div>':''}
+      ${g.ceninicio||g.cenfin?'<div style=\"background:#f9f9f9;border-radius:4px;padding:5px 8px\">🌙 Cena: '+(g.ceninicio||'—')+' – '+(g.cenfin||'—')+'</div>':''}
+      ${g.merinicio||g.merfin?'<div style=\"background:#f9f9f9;border-radius:4px;padding:5px 8px\">🍎 Merienda: '+(g.merinicio||'—')+' – '+(g.merfin||'—')+'</div>':''}
+    </div></div>
     ${g.cancelacion?`<div style="margin-bottom:12px"><div style="font-size:10px;color:#A32D2D;font-weight:500;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:4px">Razón de cancelación</div><div style="font-size:12px;color:#A32D2D">${g.cancelacion}</div></div>`:''}
   `;
   document.getElementById('detail-modal-bg').classList.add('open');
@@ -1056,9 +1295,11 @@ function buildGirasCSV(){
   const h=[
     'Código','Tipo de estudio','Nombre','Estado',
     'Fecha inicio','Fecha fin','Hora salida','Hora llegada',
+    'Desayuno inicio','Desayuno fin',
+    'Almuerzo inicio','Almuerzo fin',
+    'Cena inicio','Cena fin',
+    'Merienda inicio','Merienda fin',
     'Localidades','Personal',
-    'Adelanto pagado','Ref. adelanto',
-    'Segundo 50% pagado','Ref. segundo 50%',
     'Notas','Razón cancelación','Alerta (días)','Creada'
   ];
   const r=giras.map(g=>{
@@ -1076,12 +1317,16 @@ function buildGirasCSV(){
       (g.fechaFin&&g.fechaFin!=='null')?g.fechaFin:'',
       g.horaSalida||'',
       g.horaLlegada||'',
+      g.desinicio||'',
+      g.desfin||'',
+      g.alminicio||'',
+      g.almfin||'',
+      g.ceninicio||'',
+      g.cenfin||'',
+      g.merinicio||'',
+      g.merfin||'',
       (g.localidades||[]).join(' | '),
       pers,
-      g.adelantoPagado?'Sí':'No',
-      g.adelantoRef||'',
-      g.segundoPagado?'Sí':'No',
-      g.segundoRef||'',
       g.notas||'',
       g.cancelacion||'',
       g.alerta||'3',
