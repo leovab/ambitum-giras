@@ -230,7 +230,7 @@ body{font-family:var(--font-sans);background:#f5f5f5;min-height:100vh}
       <div class="stat"><div class="stat-n" id="s-conf">0</div><div class="stat-l">Confirmadas</div></div>
       <div class="stat"><div class="stat-n warn" id="s-pend">0</div><div class="stat-l">Pendientes</div></div>
       <div class="stat"><div class="stat-n danger" id="s-canc">0</div><div class="stat-l">Canceladas</div></div>
-      <div class="stat"><div class="stat-n" id="s-real" style="color:#534AB7">0</div><div class="stat-l">Realizadas</div></div>
+      <div class="stat"><div class="stat-n" id="s-real" style="color:#534AB7">0</div><div class="stat-l">Archivadas</div></div>
       <div class="stat"><div class="stat-n info" id="s-prox">0</div><div class="stat-l">Próx. 7 días</div></div>
       <div class="stat"><div class="stat-n purple" id="s-pers">0</div><div class="stat-l">Personal</div></div>
     </div>
@@ -238,11 +238,11 @@ body{font-family:var(--font-sans);background:#f5f5f5;min-height:100vh}
     <div id="tab-lista">
       <div class="filter-row">
         <span class="filter-label">Estado:</span>
-        <button class="filter-chip active" onclick="setFilter('todas',this)">Todas</button>
+        <button class="filter-chip active" onclick="setFilter('pendiente',this)">Pendientes</button>
         <button class="filter-chip" onclick="setFilter('confirmada',this)">Confirmadas</button>
-        <button class="filter-chip" onclick="setFilter('pendiente',this)">Pendientes</button>
         <button class="filter-chip" onclick="setFilter('cancelada',this)">Canceladas</button>
-        <button class="filter-chip" onclick="setFilter('realizada',this)">Realizadas</button>
+        <button class="filter-chip" onclick="setFilter('ultimo-mes',this)">Realizadas último mes</button>
+        <button class="filter-chip" onclick="setFilter('todas',this)">Todas</button>
       </div>
       <div id="lista-container"></div>
     </div>
@@ -589,7 +589,7 @@ body{font-family:var(--font-sans);background:#f5f5f5;min-height:100vh}
 </div>
 
 <script>
-let giras=[],personal=[],currentFilter='todas',calYear,calMonth,selectedPersonal=[],editingId=null,codigoActual='';
+let giras=[],personal=[],currentFilter='pendiente',calYear,calMonth,selectedPersonal=[],editingId=null,codigoActual='';
 const DIAS=['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
 const MESES=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
 const AVC=['av0','av1','av2','av3','av4','av5'];
@@ -891,6 +891,11 @@ function todayStr(){
 }
 
 function isPast(g){
+  // Una gira es "pasada" (va al Archivo) cuando:
+  // - Su fecha de fin ya pasó (si tiene fecha fin)
+  // - Su fecha de inicio ya pasó (si no tiene fecha fin)
+  // - O si su estado es 'realizada' (siempre va al archivo)
+  if(g.estado === 'realizada') return true;
   const fin = toDateStr(g.fechaFin);
   const ini = toDateStr(g.fechaInicio);
   const ref = fin || ini;
@@ -914,22 +919,38 @@ function getAlerts(){
 }
 
 function renderStats(){
-  const t=new Date();t.setHours(0,0,0,0);const i7=new Date(t);i7.setDate(i7.getDate()+7);
-  const prox=giras.filter(g=>{if(g.estado==='cancelada'||g.estado==='realizada')return false;const d=new Date(g.fechaInicio+'T12:00:00');return d>=t&&d<=i7;}).length;
-  document.getElementById('s-total').textContent=giras.length;
-  document.getElementById('s-conf').textContent=giras.filter(g=>g.estado==='confirmada').length;
-  document.getElementById('s-pend').textContent=giras.filter(g=>g.estado==='pendiente').length;
-  document.getElementById('s-canc').textContent=giras.filter(g=>g.estado==='cancelada').length;
-  document.getElementById('s-real').textContent=giras.filter(g=>g.estado==='realizada').length;
+  const t=new Date(); t.setHours(0,0,0,0);
+  const i7=new Date(t); i7.setDate(i7.getDate()+7);
+
+  const activas   = giras.filter(g=>!isPast(g));
+  const archivadas= giras.filter(g=>isPast(g));
+
+  // Próximas 7 días: solo giras activas confirmadas o pendientes
+  const prox=activas.filter(g=>{
+    if(g.estado==='cancelada') return false;
+    const d=new Date((g.fechaInicio||'')+'T12:00:00');
+    return d>=t && d<=i7;
+  }).length;
+
+  // Contadores: activas por estado
+  document.getElementById('s-total').textContent=activas.length;
+  document.getElementById('s-conf').textContent=activas.filter(g=>g.estado==='confirmada').length;
+  document.getElementById('s-pend').textContent=activas.filter(g=>g.estado==='pendiente').length;
+  document.getElementById('s-canc').textContent=activas.filter(g=>g.estado==='cancelada').length;
+  document.getElementById('s-real').textContent=archivadas.length;
   document.getElementById('s-prox').textContent=prox;
   document.getElementById('s-pers').textContent=personal.length;
+
+  // Alertas
   const alerts=getAlerts();
   const badge=document.getElementById('notif-count-badge');
-  if(alerts.length){badge.style.display='inline';badge.textContent=alerts.length;}else{badge.style.display='none';}
-  // Archivo badge
-  const archivadas=giras.filter(g=>isPast(g)).length;
+  if(alerts.length){badge.style.display='inline';badge.textContent=alerts.length;}
+  else{badge.style.display='none';}
+
+  // Badge en tab Archivo
   const ab=document.getElementById('archivo-count-badge');
-  if(archivadas>0){ab.style.display='inline';ab.textContent=archivadas;}else{ab.style.display='none';}
+  if(archivadas.length>0){ab.style.display='inline';ab.textContent=archivadas.length;}
+  else{ab.style.display='none';}
 }
 
 function tipoLabel(val){
@@ -957,15 +978,26 @@ function renderNotificaciones(){
 function renderLista(){
   const c=document.getElementById('lista-container');
   // Lista activa: excluye las giras pasadas (van al Archivo), salvo que el filtro sea 'realizada' o 'cancelada'
+  // Lista muestra giras ACTIVAS (no archivadas)
+  // Excepción: "ultimo-mes" muestra archivadas realizadas del último mes
+  const activas = giras.filter(g=>!isPast(g));
   let list;
-  if(currentFilter==='realizada'){
-    list=giras.filter(g=>g.estado==='realizada');
-  } else if(currentFilter==='cancelada'){
-    list=giras.filter(g=>g.estado==='cancelada');
-  } else if(currentFilter==='todas'){
-    list=giras.filter(g=>!isPast(g)||g.estado==='confirmada'||g.estado==='pendiente');
+  if(currentFilter==='todas'){
+    list=activas;
+  } else if(currentFilter==='ultimo-mes'){
+    // Giras realizadas archivadas cuya fecha inicio está en los últimos 30 días
+    const hace30 = new Date();
+    hace30.setDate(hace30.getDate()-30);
+    const hace30Str = hace30.getFullYear()+'-'+
+      String(hace30.getMonth()+1).padStart(2,'0')+'-'+
+      String(hace30.getDate()).padStart(2,'0');
+    list = giras.filter(g=>
+      isPast(g) &&
+      g.estado==='realizada' &&
+      g.fechaInicio >= hace30Str
+    );
   } else {
-    list=giras.filter(g=>g.estado===currentFilter&&!isPast(g));
+    list=activas.filter(g=>g.estado===currentFilter);
   }
   list=[...list].sort((a,b)=>new Date(a.fechaInicio)-new Date(b.fechaInicio));
   if(!list.length){
