@@ -131,6 +131,33 @@ body{font-family:var(--font-sans);background:#f5f5f5;min-height:100vh}
 .progress-bar-wrap{background:#e0e0e0;border-radius:20px;height:5px;overflow:hidden;margin-top:6px}
 .progress-bar{height:5px;border-radius:20px;background:var(--am-verde);transition:width 0.4s}
 .am-footer-brand{text-align:center;padding:12px;font-size:10px;color:#aaa;border-top:0.5px solid #eee;margin-top:1rem}
+.colab-card{background:#fff;border:0.5px solid #e0e0e0;border-radius:8px;margin-bottom:14px;overflow:hidden}
+.colab-header{background:var(--am-verde);color:#fff;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.colab-name{font-size:14px;font-weight:500}
+.colab-meta{font-size:11px;opacity:.8}
+.colab-body{padding:0}
+.quincena-section{border-bottom:0.5px solid #f0f0f0}
+.quincena-section:last-child{border-bottom:none}
+.quincena-hdr{padding:8px 16px;background:#f9f9f7;border-bottom:0.5px solid #f0f0f0;display:flex;align-items:center;justify-content:space-between}
+.quincena-label{font-size:11px;font-weight:500;color:var(--am-gris);text-transform:uppercase;letter-spacing:.04em}
+.quincena-count{font-size:11px;color:#888;font-family:monospace}
+.quincena-giras{padding:8px 16px;display:flex;flex-direction:column;gap:6px}
+.colab-gira-row{display:flex;align-items:center;gap:10px;padding:6px 10px;border-radius:6px;background:var(--am-gris-light);font-size:12px}
+.colab-gira-row .cgr-code{font-family:monospace;font-size:10px;background:var(--am-verde-light);color:var(--am-verde);padding:1px 6px;border-radius:3px;font-weight:500;flex-shrink:0}
+.colab-gira-row .cgr-name{flex:1;font-weight:500;color:var(--am-gris)}
+.colab-gira-row .cgr-date{font-size:10px;color:#888;flex-shrink:0}
+.colab-gira-row .cgr-horas{font-size:10px;font-family:monospace;color:var(--am-verde);flex-shrink:0}
+.badge.confirmada{background:var(--am-verde-light);color:var(--am-verde)}
+.badge.pendiente{background:#FAEEDA;color:#854F0B}
+.badge.cancelada{background:#FCEBEB;color:#A32D2D}
+.badge.realizada{background:#EEEDFE;color:#534AB7}
+.colab-empty{padding:12px 16px;font-size:12px;color:#aaa;font-style:italic}
+.mes-selector{display:flex;align-items:center;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.mes-selector select{font-size:13px;padding:6px 10px;border:1px solid #ddd;border-radius:6px;color:var(--am-gris);background:#fff}
+.mes-selector label{font-size:12px;color:var(--am-gris);font-weight:500}
+.reporte-btn{background:#EAF3DE;border:0.5px solid #A8C87A;color:#27500A;font-weight:500;font-size:11px;padding:5px 12px}
+.colab-totales{padding:8px 16px;background:#f9f9f7;border-top:0.5px solid #e0e0e0;display:flex;gap:16px;flex-wrap:wrap}
+.colab-total-item{font-size:11px;color:var(--am-gris)}.colab-total-item strong{color:var(--am-verde)}
 .time-picker{display:flex;align-items:center;gap:4px}
 .time-picker select{padding:5px 6px;border:1px solid #ccc;border-radius:4px;font-size:12px;color:var(--am-gris);background:#fff;cursor:pointer;-webkit-appearance:none;appearance:none;text-align:center;width:52px}
 .time-picker select:focus{outline:none;border-color:var(--am-verde)}
@@ -199,11 +226,25 @@ body{font-family:var(--font-sans);background:#f5f5f5;min-height:100vh}
   </div>
 
   <div class="am-subbar">
-    <button class="am-tab active" id="tab-btn-lista" onclick="switchTab('lista')">Lista</button>
-    <button class="am-tab" id="tab-btn-calendario" onclick="switchTab('calendario')">Calendario</button>
-    <button class="am-tab" id="tab-btn-personal" onclick="switchTab('personal')">Personal</button>
-    <button class="am-tab" id="tab-btn-notificaciones" onclick="switchTab('notificaciones')">Alertas</button>
-    <button class="am-tab" id="tab-btn-archivo" onclick="switchTab('archivo')" style="margin-left:auto;opacity:0.85">Archivo <span id="archivo-count-badge" style="display:none;background:rgba(255,255,255,0.3);border-radius:20px;padding:1px 6px;font-size:9px;font-weight:500;margin-left:2px"></span></button>
+    <button class="am-tab" id="tab-btn-calendario" onclick="switchTab('calendario')">
+      <svg width="12" height="12" viewBox="0 0 14 14" fill="none" style="vertical-align:middle;margin-right:4px"><rect x="1" y="2" width="12" height="11" rx="1.5" stroke="currentColor" stroke-width="1.2" fill="none"/><path d="M1 6h12M4 1v2M10 1v2" stroke="currentColor" stroke-width="1.2"/></svg>Calendario
+    </button>
+    <button class="am-tab active" id="tab-btn-lista" onclick="switchTab('lista')">
+      <svg width="12" height="12" viewBox="0 0 14 14" fill="none" style="vertical-align:middle;margin-right:4px"><path d="M1 3h12M1 7h12M1 11h7" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>Lista
+    </button>
+    <button class="am-tab" id="tab-btn-personal" onclick="switchTab('personal')">
+      <svg width="12" height="12" viewBox="0 0 14 14" fill="none" style="vertical-align:middle;margin-right:4px"><circle cx="7" cy="4.5" r="2.5" stroke="currentColor" stroke-width="1.2" fill="none"/><path d="M1.5 12.5c0-3 2.5-5 5.5-5s5.5 2 5.5 5" stroke="currentColor" stroke-width="1.2" fill="none"/></svg>Personal
+    </button>
+    <button class="am-tab" id="tab-btn-notificaciones" onclick="switchTab('notificaciones')">
+      <svg width="12" height="12" viewBox="0 0 14 14" fill="none" style="vertical-align:middle;margin-right:4px"><path d="M7 1a4.5 4.5 0 014.5 4.5V8l1 2H1.5l1-2V5.5A4.5 4.5 0 017 1z" stroke="currentColor" stroke-width="1.2" fill="none"/><path d="M5.5 10.5a1.5 1.5 0 003 0" stroke="currentColor" stroke-width="1.2" fill="none"/></svg>Alertas
+    </button>
+    <button class="am-tab" id="tab-btn-colaboradores" onclick="switchTab('colaboradores')">
+      <svg width="12" height="12" viewBox="0 0 14 14" fill="none" style="vertical-align:middle;margin-right:4px"><circle cx="5" cy="4" r="2" stroke="currentColor" stroke-width="1.2" fill="none"/><circle cx="10" cy="4" r="2" stroke="currentColor" stroke-width="1.2" fill="none"/><path d="M1 12c0-2.5 1.8-4 4-4s4 1.5 4 4" stroke="currentColor" stroke-width="1.2" fill="none"/><path d="M10 8c1.5.3 3 1.5 3 4" stroke="currentColor" stroke-width="1.2" fill="none"/></svg>Bisemana
+    </button>
+    <button class="am-tab" id="tab-btn-archivo" onclick="switchTab('archivo')" style="margin-left:auto;opacity:0.85">
+      <svg width="12" height="12" viewBox="0 0 14 14" fill="none" style="vertical-align:middle;margin-right:4px"><rect x="1" y="4" width="12" height="9" rx="1" stroke="currentColor" stroke-width="1.2" fill="none"/><path d="M1 6h12M5 1h4l1 3H4L5 1z" stroke="currentColor" stroke-width="1.2" fill="none"/></svg>Archivo
+      <span id="archivo-count-badge" style="display:none;background:rgba(255,255,255,0.3);border-radius:20px;padding:1px 6px;font-size:9px;font-weight:500;margin-left:2px"></span>
+    </button>
   </div>
 
   <div class="am-body">
@@ -245,6 +286,23 @@ body{font-family:var(--font-sans);background:#f5f5f5;min-height:100vh}
         <button class="filter-chip" onclick="setFilter('todas',this)">Todas</button>
       </div>
       <div id="lista-container"></div>
+    </div>
+
+    <div id="tab-colaboradores" style="display:none">
+      <div class="section-header" style="margin-bottom:8px">
+        <span class="section-title">Giras por colaborador</span>
+        <button class="btn reporte-btn" onclick="exportarReporteColaboradores()">
+          <svg width="12" height="12" viewBox="0 0 13 13" fill="none"><path d="M6.5 1v8M3.5 6l3 3 3-3M1 10v2h11v-2" stroke="currentColor" stroke-width="1.2" fill="none"/></svg>
+          Exportar reporte
+        </button>
+      </div>
+      <div class="mes-selector">
+        <label>Mes:</label>
+        <select id="colab-mes" onchange="renderColaboradores()"></select>
+        <label style="margin-left:8px">Año:</label>
+        <select id="colab-anio" onchange="renderColaboradores()"></select>
+      </div>
+      <div id="colaboradores-container"></div>
     </div>
 
     <div id="tab-archivo" style="display:none">
@@ -1348,7 +1406,7 @@ function deletePersona(id){
 function setFilter(f,btn){currentFilter=f;document.querySelectorAll('.filter-chip').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderLista();}
 
 function switchTab(tab){
-  ['lista','calendario','personal','notificaciones','archivo'].forEach(t=>{
+  ['lista','calendario','personal','notificaciones','colaboradores','archivo'].forEach(t=>{
     const el=document.getElementById('tab-'+t);
     if(el) el.style.display = t===tab ? 'block' : 'none';
     const btn=document.getElementById('tab-btn-'+t);
@@ -1358,6 +1416,7 @@ function switchTab(tab){
   if(tab==='calendario') setTimeout(function(){ renderCalendario(); }, 0);
   if(tab==='notificaciones') renderNotificaciones();
   if(tab==='archivo') renderArchivo();
+  if(tab==='colaboradores'){ initColabSelectors(); renderColaboradores(); }
 }
 
 function calPrev(){calMonth--;if(calMonth<0){calMonth=11;calYear--;}renderCalendario();}
@@ -1379,6 +1438,16 @@ function calcHorasComidas(g){
   m += calcMinutos(g.merinicio, g.merfin);
   if(m === 0) return '';
   return Math.floor(m/60)+'h '+String(m%60).padStart(2,'0')+'m';
+}
+
+function calcHorasTotalesGira(g){
+  // Total bruto: salida → llegada sin descontar comidas
+  if(!g.horaSalida || !g.horaLlegada) return '';
+  const a = g.horaSalida.split(':');
+  const b = g.horaLlegada.split(':');
+  let total = (parseInt(b[0])*60+parseInt(b[1])) - (parseInt(a[0])*60+parseInt(a[1]));
+  if(total < 0) total += 24*60;
+  return Math.floor(total/60)+'h '+String(total%60).padStart(2,'0')+'m';
 }
 
 function calcHorasEfectivasGira(g){
@@ -1689,6 +1758,212 @@ function emergencyReset(){
 if(window.location.protocol === 'file:'){
   const w = document.getElementById('file-warning');
   if(w) w.style.display = 'block';
+}
+
+// ── Colaboradores ─────────────────────────────────────────────
+const MESES_NAMES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio',
+  'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+
+function initColabSelectors(){
+  const now = new Date();
+  const mesEl = document.getElementById('colab-mes');
+  const anioEl = document.getElementById('colab-anio');
+  if(!mesEl || !anioEl) return;
+  // Populate months
+  mesEl.innerHTML = MESES_NAMES.map((m,i)=>
+    `<option value="${i+1}" ${i===now.getMonth()?'selected':''}>${m}</option>`
+  ).join('');
+  // Populate years (3 years back to 1 ahead)
+  const y = now.getFullYear();
+  anioEl.innerHTML = [y-2,y-1,y,y+1].map(yr=>
+    `<option value="${yr}" ${yr===y?'selected':''}>${yr}</option>`
+  ).join('');
+}
+
+function renderColaboradores(){
+  const c = document.getElementById('colaboradores-container');
+  if(!c) return;
+
+  const mes  = parseInt(document.getElementById('colab-mes').value);
+  const anio = parseInt(document.getElementById('colab-anio').value);
+
+  // Períodos de pago: cobro el 14 y el 28 de cada mes
+  // Período 1 (pago el 14): del 29 del mes anterior al 13 del mes actual
+  // Período 2 (pago el 28): del 14 al 28 del mes actual
+  const pad = v => String(v).padStart(2,'0');
+
+  // Mes anterior
+  const mesAnt  = mes === 1 ? 12 : mes - 1;
+  const anioAnt = mes === 1 ? anio - 1 : anio;
+
+  const p1ini = `${anioAnt}-${pad(mesAnt)}-29`;
+  const p1fin = `${anio}-${pad(mes)}-13`;
+  const p2ini = `${anio}-${pad(mes)}-14`;
+  const p2fin = `${anio}-${pad(mes)}-27`;
+
+  // Etiquetas legibles
+  const p1label = `Período 1 — 29 ${MESES_NAMES[mesAnt-1]} al 13 ${MESES_NAMES[mes-1]} (pago el 14)`;
+  const p2label = `Período 2 — 14 al 27 ${MESES_NAMES[mes-1]} (pago el 28)`;
+
+  // Filter giras que caen dentro de alguno de los dos períodos
+  const girasDelMes = giras.filter(g=>{
+    if(!g.fechaInicio) return false;
+    return g.fechaInicio >= p1ini && g.fechaInicio <= p2fin;
+  });
+
+  if(personal.length === 0){
+    c.innerHTML = '<div class="empty">No hay personal registrado. Agréguelo en la pestaña Personal.</div>';
+    return;
+  }
+  if(girasDelMes.length === 0){
+    c.innerHTML = '<div class="empty">No hay giras registradas para '+MESES_NAMES[mes-1]+' '+anio+'.</div>';
+    return;
+  }
+
+  // Build per-person report
+  const html = personal.map(p=>{
+    const girasP = girasDelMes.filter(g=>(g.personal||[]).includes(p.id));
+
+    const q1 = girasP.filter(g=>g.fechaInicio>=p1ini && g.fechaInicio<=p1fin);
+    const q2 = girasP.filter(g=>g.fechaInicio>=p2ini && g.fechaInicio<=p2fin);
+
+    if(girasP.length===0) return ''; // omit people with no giras this month
+
+    const totalGiras = girasP.length;
+    const totalHoras = girasP.map(g=>calcHorasEfectivasGira(g)||'').filter(Boolean);
+    const totalHorasBruto = girasP.map(g=>calcHorasTotalesGira(g)||'').filter(Boolean);
+    // Sumar horas totales y efectivas numéricamente
+    const sumMinutos = arr => arr.reduce((acc, h)=>{
+      const p=h.split('h '); return acc+(parseInt(p[0])||0)*60+(parseInt((p[1]||'').replace('m','').trim())||0);
+    }, 0);
+    const fmt = m => Math.floor(m/60)+'h '+String(m%60).padStart(2,'0')+'m';
+    const sumaTotal    = totalHorasBruto.length ? fmt(sumMinutos(totalHorasBruto)) : '';
+    const sumaEfectiva = totalHoras.length      ? fmt(sumMinutos(totalHoras))      : '';
+
+    const renderGiraRow = g=>`
+      <div class="colab-gira-row">
+        ${g.codigo?`<span class="cgr-code">${g.codigo}</span>`:''}
+        <span class="cgr-name">${g.nombre||''}</span>
+        ${g.tipoEstudio?`<span style="font-size:9px;color:#888;font-style:italic">${tipoLabel(g.tipoEstudio)}</span>`:''}
+        <span class="badge ${g.estado||''}" style="font-size:9px;padding:1px 6px">${
+          {confirmada:'Confirmada',pendiente:'Pendiente',cancelada:'Cancelada',realizada:'Realizada'}[g.estado]||g.estado}</span>
+        <span class="cgr-date">${fmtDate(g.fechaInicio)}</span>
+        ${(g.horaSalida||g.horaLlegada)?`<span class="cgr-horas" style="color:#555">🕐 ${g.horaSalida||'--:--'} → ${g.horaLlegada||'--:--'}</span>`:''}
+        ${calcHorasEfectivasGira(g)?`<span class="cgr-horas">${calcHorasEfectivasGira(g)}</span>`:''}
+      </div>`;
+
+    const renderQuincena = (label, lista) =>{
+      if(lista.length===0) return `
+        <div class="quincena-section">
+          <div class="quincena-hdr">
+            <span class="quincena-label">${label}</span>
+            <span class="quincena-count">Sin giras</span>
+          </div>
+        </div>`;
+      return `
+        <div class="quincena-section">
+          <div class="quincena-hdr">
+            <span class="quincena-label">${label}</span>
+            <span class="quincena-count">${lista.length} gira${lista.length!==1?'s':''}</span>
+          </div>
+          <div class="quincena-giras">${lista.map(renderGiraRow).join('')}</div>
+        </div>`;
+    };
+
+    return `
+      <div class="colab-card">
+        <div class="colab-header">
+          <div>
+            <div class="colab-name">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style="margin-right:5px;vertical-align:middle"><circle cx="6" cy="4" r="2.5" stroke="rgba(255,255,255,0.8)" stroke-width="1.2" fill="none"/><path d="M1.5 10.5c0-2.5 2-4 4.5-4s4.5 1.5 4.5 4" stroke="rgba(255,255,255,0.8)" stroke-width="1.2" fill="none"/></svg>
+              ${p.nombre}
+            </div>
+            <div class="colab-meta">${p.cargo||''}${p.cargo&&p.email?' · ':''}${p.email||''}</div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-size:13px;font-weight:600">${totalGiras} gira${totalGiras!==1?'s':''}</div>
+            ${totalHoras.length?`<div style="font-size:10px;opacity:.8">Horas registradas: ${totalHoras.join(', ')}</div>`:''}
+          </div>
+        </div>
+        <div class="colab-body">
+          ${renderQuincena(p1label, q1)}
+          ${renderQuincena(p2label, q2)}
+        </div>
+        <div class="colab-totales">
+          <div class="colab-total-item">Total giras: <strong>${totalGiras}</strong></div>
+          <div class="colab-total-item">P1 (pago el 14): <strong>${q1.length}</strong></div>
+          <div class="colab-total-item">P2 (pago el 28): <strong>${q2.length}</strong></div>
+          ${sumaTotal?`<div class="colab-total-item">Total horas gira: <strong>${sumaTotal}</strong></div>`:''}
+          ${sumaEfectiva?`<div class="colab-total-item">Horas efectivas: <strong>${sumaEfectiva}</strong></div>`:''}
+        </div>
+      </div>`;
+  }).filter(Boolean).join('');
+
+  c.innerHTML = html || '<div class="empty">Ningún colaborador participó en giras de '+MESES_NAMES[mes-1]+' '+anio+'.</div>';
+}
+
+function exportarReporteColaboradores(){
+  const mes  = parseInt(document.getElementById('colab-mes').value);
+  const anio = parseInt(document.getElementById('colab-anio').value);
+  const mesNombre = MESES_NAMES[mes-1];
+  const pad2 = v => String(v).padStart(2,'0');
+  const mesAnt2  = mes === 1 ? 12 : mes - 1;
+  const anioAnt2 = mes === 1 ? anio - 1 : anio;
+  const q1ini = `${anioAnt2}-${pad2(mesAnt2)}-29`;
+  const q1fin = `${anio}-${pad2(mes)}-13`;
+  const q2ini = `${anio}-${pad2(mes)}-14`;
+  const q2fin = `${anio}-${pad2(mes)}-27`;
+
+  const girasDelMes = giras.filter(g=>{
+    if(!g.fechaInicio) return false;
+    return g.fechaInicio >= q1ini && g.fechaInicio <= q2fin;
+  });
+
+  const esc = v => '"'+String(v||'').replace(/"/g,'""')+'"';
+
+  // Header
+  let csv = `Reporte de colaboradores — ${mesNombre} ${anio}
+`;
+  csv += `Generado: ${new Date().toLocaleDateString('es-CR')}
+
+`;
+
+  personal.forEach(p=>{
+    const girasP = girasDelMes.filter(g=>(g.personal||[]).includes(p.id));
+    if(girasP.length===0) return;
+
+    const q1 = girasP.filter(g=>g.fechaInicio>=q1ini && g.fechaInicio<=q1fin);
+    const q2 = girasP.filter(g=>g.fechaInicio>=q2ini && g.fechaInicio<=q2fin);
+
+    csv += `${p.nombre}${p.cargo?' ('+p.cargo+')':''}
+`;
+    csv += `Total giras: ${girasP.length} | Período 1 (pago el 14): ${q1.length} | Período 2 (pago el 28): ${q2.length}
+`;
+    csv += `Código,Nombre,Tipo de estudio,Estado,Fecha,Quincena,Hora salida,Hora llegada,Horas efectivas,Localidades
+`;
+
+    girasP.forEach(g=>{
+      const quinc = g.fechaInicio<=q1fin ? 'Período 1 (pago 14)' : 'Período 2 (pago 28)';
+      const locs = (g.localidades||[]).join(' | ');
+      const horas = calcHorasEfectivasGira(g)||'';
+      const estado = {confirmada:'Confirmada',pendiente:'Pendiente',cancelada:'Cancelada',realizada:'Realizada'}[g.estado]||g.estado;
+      csv += [esc(g.codigo),esc(g.nombre),esc(tipoLabel(g.tipoEstudio)),esc(estado),
+              esc(fmtDate(g.fechaInicio)),esc(quinc),esc(g.horaSalida||''),
+              esc(g.horaLlegada||''),esc(horas),esc(locs)].join(',')+String.fromCharCode(10);
+    });
+    csv += String.fromCharCode(10);
+  });
+
+  if(csv.trim().split(String.fromCharCode(10)).length <= 3){
+    alert('No hay colaboradores con giras en '+mesNombre+' '+anio);
+    return;
+  }
+
+  const blob = new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href=url; a.download=`ambitum-colaboradores-${mesNombre}-${anio}.csv`; a.click();
+  URL.revokeObjectURL(url);
 }
 
 initCal();
