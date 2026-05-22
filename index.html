@@ -979,22 +979,25 @@ function renderLista(){
   const c=document.getElementById('lista-container');
   // Lista activa: excluye las giras pasadas (van al Archivo), salvo que el filtro sea 'realizada' o 'cancelada'
   // Lista muestra giras ACTIVAS (no archivadas)
-  // Excepción: "ultimo-mes" muestra archivadas realizadas del último mes
+  // Excepciones:
+  //   - 'pendiente'  → TODAS las pendientes sin importar fecha
+  //   - 'ultimo-mes' → archivadas realizadas en los últimos 30 días
   const activas = giras.filter(g=>!isPast(g));
   let list;
   if(currentFilter==='todas'){
     list=activas;
+  } else if(currentFilter==='pendiente'){
+    // Todas las pendientes, incluidas las que ya pasaron su fecha
+    list=giras.filter(g=>g.estado==='pendiente');
   } else if(currentFilter==='ultimo-mes'){
-    // Giras realizadas archivadas cuya fecha inicio está en los últimos 30 días
     const hace30 = new Date();
     hace30.setDate(hace30.getDate()-30);
     const hace30Str = hace30.getFullYear()+'-'+
       String(hace30.getMonth()+1).padStart(2,'0')+'-'+
       String(hace30.getDate()).padStart(2,'0');
     list = giras.filter(g=>
-      isPast(g) &&
       g.estado==='realizada' &&
-      g.fechaInicio >= hace30Str
+      (g.fechaInicio||'') >= hace30Str
     );
   } else {
     list=activas.filter(g=>g.estado===currentFilter);
