@@ -323,6 +323,7 @@ body{font-family:var(--font-sans);background:#f5f5f5;min-height:100vh}
             <option value="GEO-NEOTEK">Estudio neotectónico</option>
             <option value="GEO-AMENA">Amenazas y riesgos naturales</option>
             <option value="GEO-GEO">Geofísica</option>
+            <option value="GEO-INFIL">Pruebas de infiltración</option>
           </optgroup>
           <optgroup label="Hidrogeología">
             <option value="HID-ACUIF">Caracterización de acuífero</option>
@@ -599,7 +600,7 @@ const AVC=['av0','av1','av2','av3','av4','av5'];
 // Para compartir la app con el equipo, pegue aquí la URL del Apps Script
 // y guarde el archivo. Todos los que abran este archivo la usarán automáticamente.
 // App publicada en: https://leovab.github.io/ambitum-giras/
-const APPS_SCRIPT_URL_FIJA = 'https://script.google.com/macros/s/AKfycbzW7kzOmXUgNshQCGgg40x7a0SYKHegNHHg50HUvuU7I7tROVW3U-AWpYdpENHWmkFYBg/exec';
+const APPS_SCRIPT_URL_FIJA = 'https://script.google.com/macros/s/AKfycbyKH98y8im1B5g-nU_vA5tEaPf0yuNeECoWgo1ilaS1xByoW8vkYsqxGQieE7OnMLBGFA/exec';
 
 let APPS_SCRIPT_URL = APPS_SCRIPT_URL_FIJA || localStorage.getItem('ambitum_script_url') || '';
 
@@ -783,11 +784,8 @@ function toDateStr(v){
   // Convierte cualquier formato de fecha a YYYY-MM-DD
   if(!v || v === 'null' || v === 'undefined' || v === '') return null;
   if(typeof v === 'string'){
-    // Ya está en formato YYYY-MM-DD
     if(/^\d{4}-\d{2}-\d{2}$/.test(v)) return v;
-    // ISO datetime: 2026-05-10T00:00:00.000Z → 2026-05-10
     if(v.length > 10 && v[10] === 'T') return v.slice(0, 10);
-    // Otros formatos — intentar parsear
     const d = new Date(v);
     if(!isNaN(d.getTime())){
       const yr = d.getFullYear();
@@ -805,6 +803,38 @@ function toDateStr(v){
   return null;
 }
 
+function toTimeStr(v){
+  // Convierte cualquier formato de hora a HH:MM
+  // Maneja el caso de Sheets que devuelve 1899-12-30T11:26:13.000Z
+  if(!v || v === 'null' || v === 'undefined' || v === '') return null;
+  if(typeof v === 'string'){
+    // Ya es HH:MM
+    if(/^\d{2}:\d{2}$/.test(v)) return v;
+    // HH:MM:SS
+    if(/^\d{2}:\d{2}:\d{2}$/.test(v)) return v.slice(0,5);
+    // ISO datetime (incluye el caso 1899-12-30T...)
+    if(v.includes('T')){
+      const timePart = v.split('T')[1]; // "11:26:13.000Z"
+      if(timePart){
+        // Ajustar por zona horaria UTC
+        const d = new Date(v);
+        if(!isNaN(d.getTime())){
+          const h = String(d.getUTCHours()).padStart(2,'0');
+          const m = String(d.getUTCMinutes()).padStart(2,'0');
+          return h+':'+m;
+        }
+        return timePart.slice(0,5);
+      }
+    }
+  }
+  if(v instanceof Date && !isNaN(v.getTime())){
+    const h = String(v.getUTCHours()).padStart(2,'0');
+    const m = String(v.getUTCMinutes()).padStart(2,'0');
+    return h+':'+m;
+  }
+  return null;
+}
+
 function normalizeGira(g){
   return {
     ...g,
@@ -812,8 +842,16 @@ function normalizeGira(g){
     fechaFin: toDateStr(g.fechaFin),
     localidades: parseArr(g.localidades),
     personal: parseArr(g.personal),
-    horaSalida: (g.horaSalida && g.horaSalida!=='null') ? g.horaSalida : null,
-    horaLlegada: (g.horaLlegada && g.horaLlegada!=='null') ? g.horaLlegada : null,
+    horaSalida:  toTimeStr(g.horaSalida),
+    horaLlegada: toTimeStr(g.horaLlegada),
+    desinicio:   toTimeStr(g.desinicio),
+    desfin:      toTimeStr(g.desfin),
+    alminicio:   toTimeStr(g.alminicio),
+    almfin:      toTimeStr(g.almfin),
+    ceninicio:   toTimeStr(g.ceninicio),
+    cenfin:      toTimeStr(g.cenfin),
+    merinicio:   toTimeStr(g.merinicio),
+    merfin:      toTimeStr(g.merfin),
     notas: g.notas||'',
     cancelacion: g.cancelacion||'',
     adelantoPagado: g.adelantoPagado===true||g.adelantoPagado==='TRUE'||g.adelantoPagado==='true',
@@ -895,7 +933,7 @@ function renderStats(){
 }
 
 function tipoLabel(val){
-  const labels={'GEO-CART':'Cartografiado geológico','GEO-SUELO':'Estudio de suelos','GEO-NEOTEK':'Estudio neotectónico','GEO-AMENA':'Amenazas y riesgos','GEO-GEO':'Geofísica','HID-ACUIF':'Caracterización de acuífero','HID-VULNER':'Vulnerabilidad hidrogeológica','HID-RECARG':'Zona de recarga','HID-POZO':'Inventario de pozos','MIN-EXPLOR':'Exploración minera','MIN-RESERV':'Estimación de reservas','MIN-TAJO':'Inspección de tajo','MIN-REGEN':'Regencia geológica','AMB-ESIA':'Estudio de impacto ambiental','AMB-D1':'Formulario D1 / SETENA','AMB-SUPER':'Supervisión ambiental','AMB-PGA':'Plan de gestión ambiental','OTR':'Otro / Especial'};
+  const labels={'GEO-CART':'Cartografiado geológico','GEO-SUELO':'Estudio de suelos','GEO-NEOTEK':'Estudio neotectónico','GEO-AMENA':'Amenazas y riesgos','GEO-GEO':'Geofísica','GEO-INFIL':'Pruebas de infiltración','HID-ACUIF':'Caracterización de acuífero','HID-VULNER':'Vulnerabilidad hidrogeológica','HID-RECARG':'Zona de recarga','HID-POZO':'Inventario de pozos','MIN-EXPLOR':'Exploración minera','MIN-RESERV':'Estimación de reservas','MIN-TAJO':'Inspección de tajo','MIN-REGEN':'Regencia geológica','AMB-ESIA':'Estudio de impacto ambiental','AMB-D1':'Formulario D1 / SETENA','AMB-SUPER':'Supervisión ambiental','AMB-PGA':'Plan de gestión ambiental','OTR':'Otro / Especial'};
   return labels[val]||val||'—';
 }
 
@@ -1291,6 +1329,38 @@ function calPrev(){calMonth--;if(calMonth<0){calMonth=11;calYear--;}renderCalend
 function calNext(){calMonth++;if(calMonth>11){calMonth=0;calYear++;}renderCalendario();}
 function fmtDate(d){if(!d)return'';const[y,m,dd]=d.split('-');return`${dd}/${m}/${y}`;}
 
+function calcMinutos(ini, fin){
+  if(!ini || !fin) return 0;
+  const a = ini.split(':'); const b = fin.split(':');
+  const t = (parseInt(b[0])*60+parseInt(b[1])) - (parseInt(a[0])*60+parseInt(a[1]));
+  return t > 0 ? t : 0;
+}
+
+function calcHorasComidas(g){
+  let m = 0;
+  m += calcMinutos(g.desinicio, g.desfin);
+  m += calcMinutos(g.alminicio, g.almfin);
+  m += calcMinutos(g.ceninicio, g.cenfin);
+  m += calcMinutos(g.merinicio, g.merfin);
+  if(m === 0) return '';
+  return Math.floor(m/60)+'h '+String(m%60).padStart(2,'0')+'m';
+}
+
+function calcHorasEfectivasGira(g){
+  if(!g.horaSalida || !g.horaLlegada) return '';
+  const a = g.horaSalida.split(':');
+  const b = g.horaLlegada.split(':');
+  let total = (parseInt(b[0])*60+parseInt(b[1])) - (parseInt(a[0])*60+parseInt(a[1]));
+  if(total < 0) total += 24*60;
+  let comidas = 0;
+  comidas += calcMinutos(g.desinicio, g.desfin);
+  comidas += calcMinutos(g.alminicio, g.almfin);
+  comidas += calcMinutos(g.ceninicio, g.cenfin);
+  comidas += calcMinutos(g.merinicio, g.merfin);
+  const efectivo = Math.max(0, total - comidas);
+  return Math.floor(efectivo/60)+'h '+String(efectivo%60).padStart(2,'0')+'m';
+}
+
 function buildGirasCSV(){
   const h=[
     'Código','Tipo de estudio','Nombre','Estado',
@@ -1299,6 +1369,7 @@ function buildGirasCSV(){
     'Almuerzo inicio','Almuerzo fin',
     'Cena inicio','Cena fin',
     'Merienda inicio','Merienda fin',
+    'Horas efectivas','Horas comidas',
     'Localidades','Personal',
     'Notas','Razón cancelación','Alerta (días)','Creada'
   ];
@@ -1325,6 +1396,8 @@ function buildGirasCSV(){
       g.cenfin||'',
       g.merinicio||'',
       g.merfin||'',
+      calcHorasEfectivasGira(g),
+      calcHorasComidas(g),
       (g.localidades||[]).join(' | '),
       pers,
       g.notas||'',
