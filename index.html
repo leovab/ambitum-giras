@@ -158,21 +158,230 @@ body{font-family:var(--font-sans);background:#f5f5f5;min-height:100vh}
 .reporte-btn{background:#EAF3DE;border:0.5px solid #A8C87A;color:#27500A;font-weight:500;font-size:11px;padding:5px 12px}
 .colab-totales{padding:8px 16px;background:#f9f9f7;border-top:0.5px solid #e0e0e0;display:flex;gap:16px;flex-wrap:wrap}
 .colab-total-item{font-size:11px;color:var(--am-gris)}.colab-total-item strong{color:var(--am-verde)}
-.time-picker{display:flex;align-items:center;gap:4px}
-.time-picker select{padding:5px 6px;border:1px solid #ccc;border-radius:4px;font-size:12px;color:var(--am-gris);background:#fff;cursor:pointer;-webkit-appearance:none;appearance:none;text-align:center;width:52px}
-.time-picker select:focus{outline:none;border-color:var(--am-verde)}
-.time-picker .sep{font-size:14px;font-weight:600;color:var(--am-gris);line-height:1}
+.time-picker{display:flex;align-items:center;gap:3px;min-width:0;width:100%}
+.time-picker select{flex:1 1 0;min-width:0;width:auto;padding:7px 4px;border:1px solid #bbb;border-radius:5px;font-size:14px;color:var(--am-gris);background:#fff;cursor:pointer;text-align:center;text-align-last:center;min-height:38px;touch-action:manipulation}
+.time-picker select:focus{outline:2px solid var(--am-verde);outline-offset:-1px;border-color:var(--am-verde)}
+.time-picker .sep{font-size:13px;font-weight:600;color:#999;line-height:1;flex-shrink:0}
+.comida-time-group{flex:1 1 118px;min-width:0}
 .comida-block{display:flex;flex-direction:column;gap:6px;background:#fff;border:0.5px solid #e0e0e0;border-radius:5px;padding:8px 10px;transition:opacity .2s}
 .comida-block.disabled{opacity:.45}
 .comida-block.disabled .comida-times{pointer-events:none}
 .comida-block.disabled .comida-times select{background:#f5f5f5;color:#bbb}
-.comida-header{display:flex;align-items:center;gap:8px}
-.comida-checkbox{width:15px;height:15px;cursor:pointer;accent-color:var(--am-verde);position:relative;z-index:2;pointer-events:all}
+.comida-header{display:flex;align-items:center;gap:10px;min-height:32px;padding:2px 0}
+.comida-checkbox{width:20px;height:20px;cursor:pointer;accent-color:var(--am-verde);position:relative;z-index:2;pointer-events:all;flex-shrink:0;touch-action:manipulation}
 .comida-label{font-size:11px;font-weight:500;color:var(--am-cafe)}
-.comida-times{display:flex;gap:12px;align-items:center;margin-top:4px;flex-wrap:wrap}
+.comida-times{display:flex;gap:8px;align-items:flex-start;margin-top:4px;flex-wrap:wrap}
 .comida-time-group{display:flex;flex-direction:column;gap:3px}
 .comida-time-group label{font-size:10px;color:#888;font-weight:500;text-transform:uppercase;letter-spacing:.03em}
 .divider{border:none;border-top:0.5px solid #eee;margin:4px 0}
+
+.comidas-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+@media (max-width: 560px){.comidas-grid{grid-template-columns:1fr}}
+/* ── RESPONSIVE: teléfonos y tablets ───────────────────────── */
+@media (max-width: 700px){
+  /* Comidas en una sola columna: cada bloque usa todo el ancho */
+  .comida-block{padding:10px 12px}
+  .modal{max-width:100%}
+  .modal-overlay{padding:1rem .5rem}
+}
+@media (max-width: 560px){
+  /* Grids de dos columnas pasan a una sola */
+  .field-row{grid-template-columns:1fr}
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .am-subbar{padding:6px 10px;gap:2px}
+  .am-tab{font-size:11px;padding:5px 8px}
+  /* Selectores de hora: más grandes para el dedo */
+  .time-picker select{font-size:16px;min-height:44px;padding:8px 4px}
+  .time-picker{gap:4px}
+  .comida-time-group{flex:1 1 130px}
+  .comida-checkbox{width:22px;height:22px}
+  .comida-label{font-size:13px}
+  /* Evita zoom automático al enfocar campos en móvil */
+  .field input,.field select,.field textarea{font-size:16px;padding:9px 10px;min-height:42px}
+  input[type="date"],input[type="time"]{font-size:16px;min-height:42px}
+  .colab-gira-row{flex-wrap:wrap;gap:6px}
+  .quincena-giras{padding:8px 10px}
+  .colab-totales{gap:10px}
+}
+@media (max-width: 560px){.detalle-comidas-grid{grid-template-columns:1fr!important}}
+@media (max-width: 400px){
+  .stats{grid-template-columns:1fr 1fr}
+  .modal-overlay{padding:.5rem .35rem}
+  .time-picker .sep{display:none}
+  .time-picker{gap:6px}
+}
+
+/* ═══════════════════════════════════════════════════════════
+   INTERFAZ MÓVIL — diseñada para uso en campo:
+   una mano, luz solar directa, dedos con guantes.
+   ═══════════════════════════════════════════════════════════ */
+
+/* Barra inferior y FAB ocultos en escritorio */
+.mobile-nav{display:none}
+.fab{display:none}
+
+.mobile-nav{
+  position:fixed; left:0; right:0; bottom:0; z-index:90;
+  background:#fff; border-top:1px solid #e2e2e2;
+  box-shadow:0 -2px 12px rgba(0,0,0,.07);
+  padding-bottom:env(safe-area-inset-bottom);
+}
+.mnav-item{
+  flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:3px; padding:8px 2px 7px; border:none; background:none; cursor:pointer;
+  color:#8A8A85; font-size:10px; font-weight:500; letter-spacing:.01em;
+  position:relative; min-height:56px; touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent; transition:color .15s;
+}
+.mnav-item svg{width:22px; height:22px; flex-shrink:0}
+.mnav-item.active{color:var(--am-verde)}
+.mnav-item.active::before{
+  content:''; position:absolute; top:0; left:50%; transform:translateX(-50%);
+  width:26px; height:3px; border-radius:0 0 3px 3px; background:var(--am-verde);
+}
+.mnav-item:active{background:var(--am-verde-light)}
+.mnav-badge{
+  position:absolute; top:5px; right:calc(50% - 20px);
+  background:#A32D2D; color:#fff; font-size:9px; font-weight:600;
+  min-width:16px; height:16px; border-radius:8px; padding:0 4px;
+  display:flex; align-items:center; justify-content:center;
+}
+
+.fab{
+  position:fixed; right:16px; z-index:95;
+  bottom:calc(68px + env(safe-area-inset-bottom));
+  width:56px; height:56px; border-radius:18px; border:none;
+  background:var(--am-verde); color:#fff; cursor:pointer;
+  box-shadow:0 4px 14px rgba(46,107,62,.38), 0 1px 3px rgba(0,0,0,.2);
+  align-items:center; justify-content:center;
+  touch-action:manipulation; -webkit-tap-highlight-color:transparent;
+  transition:transform .12s, box-shadow .12s;
+}
+.fab svg{width:26px; height:26px}
+.fab:active{transform:scale(.93); box-shadow:0 2px 8px rgba(46,107,62,.4)}
+
+@media (max-width: 700px){
+  /* ── Estructura general ── */
+  .mobile-nav{display:flex}
+  .fab{display:flex}
+  .app{box-shadow:none}
+  .am-body{
+    padding:0 14px 14px;
+    padding-bottom:calc(84px + env(safe-area-inset-bottom));
+  }
+  .am-subbar{display:none}            /* la reemplaza la barra inferior */
+
+  /* ── Encabezado compacto y fijo ── */
+  .am-header{
+    position:sticky; top:0; z-index:80;
+    padding:8px 14px; gap:6px;
+    border-bottom:1px solid var(--am-verde);
+    box-shadow:0 1px 6px rgba(0,0,0,.05);
+  }
+  .am-logo-mark img{max-height:30px!important}
+  .am-header-right{gap:6px}
+  .am-header-right .btn{
+    min-height:38px; min-width:38px; padding:0 10px!important;
+    font-size:12px!important; justify-content:center;
+  }
+  .am-header-right .am-primary{display:none}   /* la reemplaza el FAB */
+  .am-sync{font-size:10px}
+
+  /* ── Estadísticas: tira horizontal en vez de rejilla ── */
+  .stats{
+    display:flex; gap:8px; overflow-x:auto; margin-bottom:14px;
+    padding-bottom:4px; scroll-snap-type:x proximity;
+    -webkit-overflow-scrolling:touch; scrollbar-width:none;
+  }
+  .stats::-webkit-scrollbar{display:none}
+  .stat{
+    flex:0 0 auto; min-width:94px; scroll-snap-align:start;
+    padding:9px 12px; border-top-width:3px;
+  }
+  .stat-n{font-size:19px}
+  .stat-l{font-size:9.5px}
+
+  /* ── Filtros deslizables ── */
+  .filter-row{
+    display:flex; gap:7px; overflow-x:auto; padding-bottom:4px;
+    -webkit-overflow-scrolling:touch; scrollbar-width:none;
+  }
+  .filter-row::-webkit-scrollbar{display:none}
+  .filter-chip{
+    flex:0 0 auto; padding:8px 15px; font-size:12.5px;
+    min-height:38px; display:inline-flex; align-items:center;
+    touch-action:manipulation;
+  }
+
+  /* ── Tarjetas de gira: más aire, mayor área táctil ── */
+  .gcard{
+    padding:14px 15px; margin-bottom:10px;
+    border-left-width:5px;                 /* estrato de estado */
+    border-radius:10px;
+  }
+  .gcard:active{background:#FAFAF8}
+  .gcard-title{font-size:15px; line-height:1.3}
+  .gcard-meta{font-size:12px; margin-top:5px; gap:7px}
+  .gcard-code{font-size:11px; padding:2px 7px}
+  .icon-btn{min-width:36px; min-height:36px}
+
+  /* ── Botones en general ── */
+  .btn{min-height:40px; font-size:13px; padding:9px 15px}
+  .section-header{flex-wrap:wrap; gap:8px; margin-bottom:10px}
+  .section-title{font-size:14px}
+
+  /* ── Modales a pantalla completa ── */
+  .modal-overlay{padding:0; align-items:stretch; overflow:hidden}
+  .modal{
+    max-width:100%; width:100%; margin:0; border-radius:0;
+    border-left:none; border-right:none; border-bottom:none;
+    display:flex; flex-direction:column; max-height:100dvh; height:100dvh;
+  }
+  .modal-hdr{
+    position:sticky; top:0; z-index:2; padding:14px 16px;
+    padding-top:calc(14px + env(safe-area-inset-top));
+  }
+  .modal-hdr-title{font-size:15px}
+  .modal-body{flex:1 1 auto; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:16px 14px}
+  .modal-footer{
+    position:sticky; bottom:0; z-index:2; gap:10px;
+    padding:12px 14px calc(12px + env(safe-area-inset-bottom));
+    box-shadow:0 -2px 10px rgba(0,0,0,.06);
+  }
+  .modal-footer .btn{flex:1; justify-content:center; min-height:46px; font-size:14px}
+  .modal-close{min-width:40px; min-height:40px; font-size:20px}
+
+  /* ── Bisemana ── */
+  .colab-header{padding:12px 14px}
+  .colab-name{font-size:15px}
+  .colab-gira-row{padding:9px 11px; font-size:12.5px}
+  .quincena-hdr{padding:9px 14px}
+  .quincena-label{font-size:11.5px}
+  .mes-selector select{min-height:42px; font-size:15px; flex:1}
+  .mes-selector{gap:6px}
+
+  /* ── Calendario ── */
+  .cal-day{min-height:56px; padding:2px 3px}
+  .cal-dot{font-size:8.5px; padding:2px 3px}
+  .cal-head{font-size:9px; padding:5px 0}
+}
+
+@media (max-width: 400px){
+  .mnav-item{font-size:9px; gap:2px}
+  .mnav-item svg{width:20px; height:20px}
+  .am-body{padding-left:11px; padding-right:11px}
+  .gcard{padding:12px 13px}
+}
+
+/* Respeta preferencia de movimiento reducido */
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration:.01ms!important; transition-duration:.01ms!important}
+}
+
+/* Foco visible para accesibilidad */
+.mnav-item:focus-visible, .fab:focus-visible, .btn:focus-visible, .filter-chip:focus-visible{
+  outline:2px solid var(--am-verde); outline-offset:2px;
+}
 </style>
 </head>
 <body>
@@ -407,6 +616,7 @@ body{font-family:var(--font-sans);background:#f5f5f5;min-height:100vh}
  </select>
  </div>
  <div class="field"><label>Nombre de la gira *</label><input type="text" id="f-nombre" placeholder="Ej: Monitoreo Zona Norte"></div>
+ <div class="field"><label>Número de cotización</label><input type="text" id="f-cotizacion" placeholder="Ej: COT-2026-084" inputmode="text"></div>
  <div class="field-row">
  <div class="field"><label>Estado</label><select id="f-estado"><option value="pendiente">Pendiente</option><option value="confirmada">Confirmada</option><option value="realizada">Realizada</option><option value="cancelada">Cancelada</option></select></div>
  <div class="field"><label>Alerta (días antes)</label><select id="f-alerta"><option value="0">Sin alerta</option><option value="1">1 día</option><option value="3" selected>3 días</option><option value="7">7 días</option><option value="14">14 días</option></select></div>
@@ -443,7 +653,7 @@ body{font-family:var(--font-sans);background:#f5f5f5;min-height:100vh}
 
  <!-- Tiempos de comida -->
  <div style="font-size:11px;font-weight:500;color:var(--am-verde)">Tiempos de comida <span style="font-weight:400;color:#888;font-size:10px">(active el que corresponda)</span></div>
- <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+ <div class="comidas-grid">
 
  <!-- Desayuno -->
  <div class="comida-block disabled" id="blk-des">
@@ -567,6 +777,12 @@ body{font-family:var(--font-sans);background:#f5f5f5;min-height:100vh}
  </div>
  <div class="field"><label>Localidades / Sitios de campo</label><input type="text" id="f-localidades" placeholder="Ej: Liberia, Santa Cruz, Nicoya (separadas por coma)"></div>
  <div class="field">
+  <label>Ubicación en Maps</label>
+  <input type="url" id="f-maps" placeholder="Pegue el enlace de Google Maps" inputmode="url" autocomplete="off">
+  <span style="font-size:10px;color:#999;margin-top:3px">También acepta coordenadas: 10.4567, -85.1234</span>
+ </div>
+ <div class="field"><label>Número de contacto</label><input type="tel" id="f-contacto" placeholder="Ej: 8888-8888" inputmode="tel" autocomplete="off"></div>
+ <div class="field">
  <label>Personal asignado</label>
  <div class="chips-wrap" id="personal-chips"></div>
  <select id="personal-select" style="margin-top:5px;font-size:12px;padding:5px 8px;border:1px solid #ccc;border-radius:4px" onchange="addPersonalChip()"><option value="">— Agregar persona —</option></select>
@@ -658,7 +874,7 @@ const AVC=['av0','av1','av2','av3','av4','av5'];
 // Para compartir la app con el equipo, pegue aquí la URL del Apps Script
 // y guarde el archivo. Todos los que abran este archivo la usarán automáticamente.
 // App publicada en: https://leovab.github.io/ambitum-giras/
-const APPS_SCRIPT_URL_FIJA = 'https://script.google.com/macros/s/AKfycbyKH98y8im1B5g-nU_vA5tEaPf0yuNeECoWgo1ilaS1xByoW8vkYsqxGQieE7OnMLBGFA/exec';
+const APPS_SCRIPT_URL_FIJA = 'https://script.google.com/macros/s/AKfycbwqVjlxZU8xVbBoSXLa36DcjuD6flZ2X6Ol5jObrxlZ1eSYjQjbBkYbcE7fF50TOUL5fQ/exec';
 
 let APPS_SCRIPT_URL = APPS_SCRIPT_URL_FIJA || localStorage.getItem('ambitum_script_url') || '';
 
@@ -1007,8 +1223,15 @@ function renderStats(){
 
  // Badge en tab Archivo
  const ab=document.getElementById('archivo-count-badge');
- if(archivadas.length>0){ab.style.display='inline';ab.textContent=archivadas.length;}
- else{ab.style.display='none';}
+ if(ab){
+  if(archivadas.length>0){ab.style.display='inline';ab.textContent=archivadas.length;}
+  else{ab.style.display='none';}
+ }
+ const mab=document.getElementById('mnav-archivo-badge');
+ if(mab){
+  if(archivadas.length>0){mab.style.display='flex';mab.textContent=archivadas.length>99?'99+':archivadas.length;}
+  else{mab.style.display='none';}
+ }
 }
 
 function tipoLabel(val){
@@ -1271,7 +1494,7 @@ function calcularHoras(){
 
 function openModal(){
  editingId=null;selectedPersonal=[];
- ['edit-id','f-nombre','f-fecha-inicio','f-fecha-fin','f-localidades','f-notas','f-cancelacion'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
+ ['edit-id','f-nombre','f-fecha-inicio','f-fecha-fin','f-localidades','f-notas','f-cancelacion','f-cotizacion','f-maps','f-contacto'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
  // Reset all time pickers
  ['salida','llegada'].forEach(function(id){
  ['h','m'].forEach(function(part){ const el=document.getElementById('f-hora-'+id+'-'+part); if(el) el.value=''; });
@@ -1305,6 +1528,9 @@ function editGira(id){
  document.getElementById('f-localidades').value=(g.localidades||[]).join(', ');
  document.getElementById('f-notas').value=g.notas||'';
  document.getElementById('f-cancelacion').value=g.cancelacion||'';
+ document.getElementById('f-cotizacion').value=g.cotizacion||'';
+ document.getElementById('f-maps').value=g.maps||'';
+ document.getElementById('f-contacto').value=g.contacto||'';
  document.getElementById('f-alerta').value=g.alerta||3;
  document.getElementById('f-tipo-estudio').value=g.tipoEstudio||'';
  document.getElementById('f-hora-salida').value=g.horaSalida||'';
@@ -1338,7 +1564,7 @@ function saveGira(){
  if(!nombre||!fecha){alert('El nombre y la fecha de inicio son obligatorios.');return;}
  if(!tipo){alert('Por favor selecciona el tipo de estudio.');return;}
  const prevGira = editingId ? giras.find(x=>x.id===editingId) : null;
- const g={id:editingId||'g'+Date.now(),codigo:codigoActual,tipoEstudio:tipo,nombre,estado:document.getElementById('f-estado').value,fechaInicio:fecha,fechaFin:document.getElementById('f-fecha-fin').value||null,horaSalida:document.getElementById('f-hora-salida').value||null,horaLlegada:document.getElementById('f-hora-llegada').value||null,localidades:document.getElementById('f-localidades').value.split(',').map(s=>s.trim()).filter(Boolean),personal:[...selectedPersonal],notas:document.getElementById('f-notas').value.trim(),cancelacion:document.getElementById('f-cancelacion').value.trim(),desinicio:document.getElementById('f-des-inicio').value||null,
+ const g={id:editingId||'g'+Date.now(),codigo:codigoActual,tipoEstudio:tipo,nombre,estado:document.getElementById('f-estado').value,fechaInicio:fecha,fechaFin:document.getElementById('f-fecha-fin').value||null,horaSalida:document.getElementById('f-hora-salida').value||null,horaLlegada:document.getElementById('f-hora-llegada').value||null,localidades:document.getElementById('f-localidades').value.split(',').map(s=>s.trim()).filter(Boolean),personal:[...selectedPersonal],notas:document.getElementById('f-notas').value.trim(),cancelacion:document.getElementById('f-cancelacion').value.trim(),cotizacion:document.getElementById('f-cotizacion').value.trim(),maps:document.getElementById('f-maps').value.trim(),contacto:document.getElementById('f-contacto').value.trim(),desinicio:document.getElementById('f-des-inicio').value||null,
  desfin:document.getElementById('f-des-fin').value||null,
  alminicio:document.getElementById('f-alm-inicio').value||null,
  almfin:document.getElementById('f-alm-fin').value||null,
@@ -1364,6 +1590,11 @@ function showDetail(id){
  const dl=g.estado!=='cancelada'?(days===0?' · Hoy':days===1?' · Mañana':days>0&&days<=14?` · En ${days} días`:days<0?` · Hace ${Math.abs(days)} días`:''):'';
  document.getElementById('detail-body').innerHTML=`
  ${g.codigo?`<div style="margin-bottom:12px"><div style="font-size:10px;color:var(--am-verde);font-weight:500;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:4px">Código de gira</div><span class="code-preview" style="font-size:12px">${g.codigo}</span></div>`:''}
+ ${g.cotizacion?`<div style="margin-bottom:12px"><div style="font-size:10px;color:var(--am-verde);font-weight:500;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:4px">Número de cotización</div><div style="font-size:12px;color:var(--am-gris);font-family:monospace">${g.cotizacion}</div></div>`:''}
+ ${(g.maps||g.contacto)?`<div style="margin-bottom:12px;display:flex;gap:8px;flex-wrap:wrap">
+   ${g.maps?`<a href="${mapsHref(g.maps)}" target="_blank" rel="noopener" class="btn" style="flex:1;min-width:140px;justify-content:center;min-height:42px;background:#E8F0FE;border-color:#B3C8F5;color:#1558D6;font-weight:500;text-decoration:none"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 1.5c-2.5 0-4.5 2-4.5 4.5 0 3.2 4.5 8.5 4.5 8.5s4.5-5.3 4.5-8.5c0-2.5-2-4.5-4.5-4.5z" stroke="currentColor" stroke-width="1.3" fill="none"/><circle cx="8" cy="6" r="1.7" stroke="currentColor" stroke-width="1.3" fill="none"/></svg>Cómo llegar</a>`:''}
+   ${g.contacto?`<a href="tel:${String(g.contacto).replace(/[^0-9+]/g,'')}" class="btn" style="flex:1;min-width:140px;justify-content:center;min-height:42px;background:var(--am-verde-light);border-color:var(--am-verde-border);color:var(--am-verde);font-weight:500;text-decoration:none"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 2.5h2.5l1.2 3-1.5 1.2a9 9 0 004.1 4.1l1.2-1.5 3 1.2V13c0 .6-.5 1-1 1A10.5 10.5 0 012 4c0-.6.4-1.5 1-1.5z" stroke="currentColor" stroke-width="1.3" fill="none" stroke-linejoin="round"/></svg>${g.contacto}</a>`:''}
+ </div>`:''}
  <div style="margin-bottom:12px"><div style="font-size:10px;color:var(--am-verde);font-weight:500;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:4px">Tipo de estudio</div><div style="font-size:12px;color:var(--am-gris)">${tipoLabel(g.tipoEstudio)}</div></div>
  <div style="margin-bottom:12px"><div style="font-size:10px;color:var(--am-verde);font-weight:500;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:4px">Estado</div><span class="badge ${g.estado}">${g.estado.charAt(0).toUpperCase()+g.estado.slice(1)}</span></div>
  <div style="margin-bottom:12px"><div style="font-size:10px;color:var(--am-verde);font-weight:500;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:4px">Fechas</div><div style="font-size:12px;color:var(--am-gris)">${fmtDate(g.fechaInicio)}${g.fechaFin?' — '+fmtDate(g.fechaFin):''}${dl}</div></div>
@@ -1373,7 +1604,7 @@ function showDetail(id){
  ${g.notas?`<div style="margin-bottom:12px"><div style="font-size:10px;color:var(--am-verde);font-weight:500;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:4px">Descripción</div><div style="font-size:12px;color:var(--am-gris);line-height:1.6">${g.notas}</div></div>`:''}
  <div style="margin-bottom:12px"><div style="font-size:10px;color:var(--am-verde);font-weight:500;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:6px">Horario y tiempos de comida</div>
  ${(g.horaSalida||g.horaLlegada)?'<div style=\"font-size:12px;color:var(--am-gris);margin-bottom:6px\">Salida: <strong>'+(g.horaSalida||'—')+'</strong> &nbsp;→&nbsp; Llegada: <strong>'+(g.horaLlegada||'—')+'</strong></div>':''}
- <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:11px">
+ <div class="detalle-comidas-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:11px">
  ${g.desinicio||g.desfin?'<div style=\"background:#f9f9f9;border-radius:4px;padding:5px 8px\">🍳 Desayuno: '+(g.desinicio||'—')+' – '+(g.desfin||'—')+'</div>':''}
  ${g.alminicio||g.almfin?'<div style=\"background:#f9f9f9;border-radius:4px;padding:5px 8px\">🍽️ Almuerzo: '+(g.alminicio||'—')+' – '+(g.almfin||'—')+'</div>':''}
  ${g.ceninicio||g.cenfin?'<div style=\"background:#f9f9f9;border-radius:4px;padding:5px 8px\">🌙 Cena: '+(g.ceninicio||'—')+' – '+(g.cenfin||'—')+'</div>':''}
@@ -1411,7 +1642,11 @@ function switchTab(tab){
  if(el) el.style.display = t===tab ? 'block' : 'none';
  const btn=document.getElementById('tab-btn-'+t);
  if(btn) btn.classList.toggle('active', t===tab);
+ const mbtn=document.getElementById('mtab-'+t);
+ if(mbtn) mbtn.classList.toggle('active', t===tab);
  });
+ // En móvil, volver al inicio de la pestaña
+ if(window.innerWidth<=700) window.scrollTo({top:0,behavior:'smooth'});
  // Render AFTER making tab visible so DOM dimensions are correct
  if(tab==='calendario') setTimeout(function(){ renderCalendario(); }, 0);
  if(tab==='notificaciones') renderNotificaciones();
@@ -1422,6 +1657,31 @@ function switchTab(tab){
 function calPrev(){calMonth--;if(calMonth<0){calMonth=11;calYear--;}renderCalendario();}
 function calNext(){calMonth++;if(calMonth>11){calMonth=0;calYear++;}renderCalendario();}
 function fmtDate(d){if(!d)return'';const[y,m,dd]=d.split('-');return`${dd}/${m}/${y}`;}
+
+function exportPersonalCSV(){
+  if(!personal.length){ alert('No hay personal registrado para exportar.'); return; }
+  const csv = buildPersonalCSV();
+  const now = new Date().toISOString().split('T')[0];
+  const blob = new Blob(['\ufeff'+csv], {type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'ambitum-personal-'+now+'.csv';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function mapsHref(v){
+  const s=String(v||'').trim();
+  if(!s) return '#';
+  // Ya es un enlace
+  if(/^https?:\/\//i.test(s)) return s;
+  // Coordenadas tipo "10.4567, -85.1234"
+  if(/^-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?$/.test(s))
+    return 'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(s.replace(/\s/g,''));
+  // Texto libre: buscarlo en Maps
+  return 'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(s);
+}
 
 function calcMinutos(ini, fin){
  if(!ini || !fin) return 0;
@@ -1474,6 +1734,7 @@ function buildGirasCSV(){
  'Cena inicio','Cena fin',
  'Merienda inicio','Merienda fin',
  'Horas efectivas','Horas comidas',
+ 'N° cotización','Ubicación Maps','N° contacto',
  'Localidades','Personal',
  'Notas','Razón cancelación','Alerta (días)','Creada'
  ];
@@ -1502,6 +1763,9 @@ function buildGirasCSV(){
  g.merfin||'',
  calcHorasEfectivasGira(g),
  calcHorasComidas(g),
+ g.cotizacion||'',
+ g.maps||'',
+ g.contacto||'',
  (g.localidades||[]).join(' | '),
  pers,
  g.notas||'',
@@ -1965,6 +2229,19 @@ function exportarReporteColaboradores(){
  URL.revokeObjectURL(url);
 }
 
+// Oculta el botón flotante mientras haya un modal abierto
+(function(){
+  const fab=document.getElementById('fab-nueva');
+  if(!fab) return;
+  const check=()=>{
+    const abierto=document.querySelector('.modal-overlay.open');
+    fab.style.visibility = abierto ? 'hidden' : '';
+  };
+  new MutationObserver(check).observe(document.body,{
+    subtree:true, attributes:true, attributeFilter:['class']
+  });
+})();
+
 initCal();
 loadData();
 </script>
@@ -2133,5 +2410,35 @@ loadData();
  </div>
 </div>
 
+
+<!-- ══ Navegación inferior (solo móvil) ══════════════════════ -->
+<nav class="mobile-nav" id="mobile-nav" aria-label="Navegación principal">
+  <button class="mnav-item" id="mtab-calendario" onclick="switchTab('calendario')">
+    <svg viewBox="0 0 22 22" fill="none"><rect x="3" y="4" width="16" height="15" rx="2.5" stroke="currentColor" stroke-width="1.6"/><path d="M3 9h16M7.5 2.5v3M14.5 2.5v3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+    <span>Calendario</span>
+  </button>
+  <button class="mnav-item active" id="mtab-lista" onclick="switchTab('lista')">
+    <svg viewBox="0 0 22 22" fill="none"><path d="M3 6h16M3 11h16M3 16h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    <span>Lista</span>
+  </button>
+  <button class="mnav-item" id="mtab-colaboradores" onclick="switchTab('colaboradores')">
+    <svg viewBox="0 0 22 22" fill="none"><circle cx="8" cy="7" r="3" stroke="currentColor" stroke-width="1.6"/><circle cx="15.5" cy="7.5" r="2.4" stroke="currentColor" stroke-width="1.4"/><path d="M2.5 18c0-3.3 2.5-5.5 5.5-5.5s5.5 2.2 5.5 5.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M15.5 12.5c2.3.3 4 2.2 4 5.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+    <span>Bisemana</span>
+  </button>
+  <button class="mnav-item" id="mtab-personal" onclick="switchTab('personal')">
+    <svg viewBox="0 0 22 22" fill="none"><circle cx="11" cy="7" r="3.4" stroke="currentColor" stroke-width="1.6"/><path d="M3.5 19c0-4 3.3-6.8 7.5-6.8s7.5 2.8 7.5 6.8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+    <span>Personal</span>
+  </button>
+  <button class="mnav-item" id="mtab-archivo" onclick="switchTab('archivo')">
+    <svg viewBox="0 0 22 22" fill="none"><rect x="3" y="7" width="16" height="12" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M3 10.5h16M7.5 3.5h7l1.5 3.5h-10l1.5-3.5z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+    <span>Archivo</span>
+    <span class="mnav-badge" id="mnav-archivo-badge" style="display:none"></span>
+  </button>
+</nav>
+
+<!-- ══ Botón de acción flotante (solo móvil) ═════════════════ -->
+<button class="fab" id="fab-nueva" onclick="openModal()" aria-label="Nueva gira">
+  <svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
+</button>
 </body>
 </html>
